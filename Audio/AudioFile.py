@@ -23,9 +23,9 @@ class AudioSource(object):
 
 class AudioFile(AudioSource):
     """
-    Creates a new ``AudioFile`` instance given a WAV/AIFF/FLAC audio file ``filename_or_fileobject``. Subclass of ``AudioSource``.
-    If ``filename_or_fileobject`` is a string, then it is interpreted as a path to an audio file on the filesystem.
-    Otherwise, ``filename_or_fileobject`` should be a file-like object such as ``io.BytesIO`` or similar.
+    Creates a new ``AudioFile`` instance given a WAV/AIFF/FLAC audio file ``filename_or_fileobject``. Subclass of
+    ``AudioSource``. If ``filename_or_fileobject`` is a string, then it is interpreted as a path to an audio file on
+    the filesystem. Otherwise, ``filename_or_fileobject`` should be a file-like object such as ``io.BytesIO`` or similar.
     Note that functions that read from the audio (such as ``recognizer_instance.record`` or
     ``recognizer_instance.listen``) will move ahead in the stream. For example, if you execute `
     `recognizer_instance.record(audiofile_instance, duration=10)`` twice, the first time it will return the first
@@ -37,7 +37,6 @@ class AudioFile(AudioSource):
     """
 
     def __init__(self, filename_or_fileobject):
-        #super().__init__()
         assert isinstance(filename_or_fileobject, (type(""), type(u""))) or hasattr(filename_or_fileobject, "read"), "Given audio file must be a filename string or a file-like object"
         self.filename_or_fileobject = filename_or_fileobject
         self.stream = None
@@ -114,9 +113,10 @@ class AudioFile(AudioSource):
         self.DURATION = None
 
 
-
 def get_flac_converter():
-    """Returns the absolute path of a FLAC converter executable, or raises an OSError if none can be found."""
+    """
+    Returns the absolute path of a FLAC converter executable, or raises an OSError if none can be found.
+    """
     flac_converter = shutil_which("flac")  # check for installed version first
     if flac_converter is None:  # flac utility is not installed
         base_path = os.path.dirname(os.path.abspath(__file__))  # directory of the current module file, where all the FLAC bundled binaries are stored
@@ -130,7 +130,8 @@ def get_flac_converter():
         elif system == "Linux" and machine in {"x86_64", "AMD64"}:
             flac_converter = os.path.join(base_path, "flac-linux-x86_64")
         else:  # no FLAC converter available
-            raise OSError("FLAC conversion utility not available - consider installing the FLAC command line application by running `apt-get install flac` or your operating system's equivalent")
+            raise OSError("FLAC conversion utility not available - consider installing the FLAC command line "
+                          "application by running `apt-get install flac` or your operating system's equivalent")
 
     # mark FLAC converter as executable if possible
     try:
@@ -147,8 +148,11 @@ def get_flac_converter():
 
     return flac_converter
 
+
 def shutil_which(pgm):
-    """Python 2 compatibility: backport of ``shutil.which()`` from Python 3"""
+    """
+    Python 2 compatibility: backport of ``shutil.which()`` from Python 3
+    """
     path = os.getenv('PATH')
     for p in path.split(os.path.pathsep):
         p = os.path.join(p, pgm)

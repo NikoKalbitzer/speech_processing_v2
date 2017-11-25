@@ -8,7 +8,6 @@ from resources.supported_languages import interactive_dictation, conversation
 try:
     with open('configs/configuration.json') as json_file:
         json_data = json.load(json_file)
-        json_file.close()
 except FileNotFoundError as e:
     print(str(e))
 except KeyError as e:

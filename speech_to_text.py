@@ -3,7 +3,7 @@ from os import path
 from audio.audio_file import AudioFile
 from recognizer import Recognizer, UnknownValueError, RequestError
 from microphone import Microphone
-from resources.supported_languages import interactive_dictation, conversation
+from resources.supported_languages import STTLanguageCommand
 
 try:
     with open('configs/configuration.json') as json_file:
@@ -13,6 +13,86 @@ except FileNotFoundError as e:
 except KeyError as e:
     print(str(e) + " is not defined in config.json")
 
+
+class SpeechToText:
+
+    def __init__(self, Bing_Key, mode=None, language=None):
+
+        if isinstance(Bing_Key, str):
+            self.bing_key = Bing_Key
+        else:
+            raise TypeError("Bing_Key must be type of string")
+
+        if mode is None:
+            self.mode = 'interactive_dictation'
+        else:
+            if isinstance(mode, str):
+                self.mode = mode
+            else:
+                raise TypeError("mode must be type of string")
+
+        if language is None:
+            self.language = 'germany'
+        else:
+            if isinstance(language, str):
+                self.language = language
+            else:
+                raise TypeError("language must be type of string")
+
+        lang = STTLanguageCommand()
+        self.lang_abbreviation = lang(self.mode, self.language)
+
+        self.recognizer = Recognizer()
+
+    def start_recognize(self, recognizer='listen', duration=None):
+        """
+
+        :return:
+        """
+
+        if recognizer is 'listen':
+            with Microphone() as source:
+                print("Please say something: ...")
+                audio = self.recognizer.listen(source)
+
+        elif recognizer is 'recorder':
+            if duration is None:
+                self.duration = 5
+            else:
+                if isinstance(duration, int):
+                    self.duration = duration
+                else:
+                    raise TypeError("duration must be type of integer")
+
+            with Microphone() as source:
+                print("Please say something: ...")
+                audio = self.recognizer.record(source, duration=self.duration)
+        else:
+            return None
+
+        print("Recording finished!")
+
+        return self.get_result(audio)
+
+    def get_result(self, audio):
+        """
+
+        :return:
+        """
+
+        result = self.recognizer.recognize_bing(audio, key=self.bing_key, language=self.lang_abbreviation, show_all=True)
+        print(result)
+        if 'DisplayText' in result:
+            try:
+                print("You said: " + result['DisplayText'])
+                return result['DisplayText']
+            except UnknownValueError:
+                print("Bing Voice Recognition could not understand audio")
+            except RequestError as e:
+                print("Could not request results from Bing Voice Recognition service; {0}".format(e))
+
+        else:
+            return None
 
 def speech_to_text(language='germany', mode=None, recognizer='listen', duration=5):
 

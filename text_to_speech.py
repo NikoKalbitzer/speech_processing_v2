@@ -1,10 +1,10 @@
 import http.client, urllib.parse, json
 from xml.etree import ElementTree
-from resources.supported_languages import SupportedLocales, LanguageCommand
+from resources.supported_languages import TTSSupportedLocales, TTSLanguageCommand
 import pyaudio
 import wave
 
-lang = LanguageCommand()
+lang = TTSLanguageCommand()
 
 
 class TextToSpeech:

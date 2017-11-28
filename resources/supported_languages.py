@@ -34,10 +34,33 @@ interactive_dictation = {
 conversation = {
 
 }
+
+
+class STTLanguageCommand:
+
+    def __init__(self):
+        self.interactive_dictation = interactive_dictation
+        self.conversation = conversation
+
+    def __call__(self, mode, language):
+
+        if isinstance(language, str):
+            if mode == 'interactive_dictation':
+                return interactive_dictation[language]
+            elif mode == 'conversation':
+                return conversation[language]
+            else:
+                raise ValueError("Please select mode 'interactive_dictation' or 'conversation'")
+        else:
+            raise TypeError("language must be type of string")
+
+
+
+
 # https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoiceoutput
 
 
-class SupportedLocales:
+class TTSSupportedLocales:
 
     def __init__(self, locale, gender, service_name_map):
         self.locale = locale
@@ -50,14 +73,23 @@ class SupportedLocales:
 
 
 mode = [
-    SupportedLocales("de-DE", "Female", "Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)"),
-    SupportedLocales("de-DE", "Male", "Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)"),
-    SupportedLocales("en-US", "Female", "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)"),
-    SupportedLocales("en-US", "Male", "Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)")
+    TTSSupportedLocales("de-DE", "Female", "Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)"),
+    TTSSupportedLocales("de-DE", "Male", "Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)"),
+
+    TTSSupportedLocales("en-US", "Female", "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)"),
+    TTSSupportedLocales("en-US", "Male", "Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)"),
+
+    TTSSupportedLocales("en-AU", "Female", "Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)"),
+
+    TTSSupportedLocales("en-GB", "Female", "Microsoft Server Speech Text to Speech Voice (en-GB, Susan, Apollo)"),
+    TTSSupportedLocales("en-GB", "Male", "Microsoft Server Speech Text to Speech Voice (en-GB, George, Apollo)"),
+
+    TTSSupportedLocales("es-ES", "Female", "Microsoft Server Speech Text to Speech Voice (es-ES, Laura, Apollo)"),
+    TTSSupportedLocales("es-ES", "Male", "Microsoft Server Speech Text to Speech Voice (es-ES, Pablo, Apollo)")
 ]
 
 
-class LanguageCommand:
+class TTSLanguageCommand:
 
     def __init__(self):
         self.modes = [mode]
@@ -71,5 +103,7 @@ class LanguageCommand:
 
 
 if __name__ == '__main__':
-   d = LanguageCommand()
+   d = TTSLanguageCommand()
    print(d(locale='de-DE', gender='Male'))
+   sst = STTLanguageCommand()
+   print(sst(mode='interactive_dictation', language='germany'))

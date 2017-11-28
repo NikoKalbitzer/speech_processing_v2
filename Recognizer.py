@@ -8,8 +8,8 @@ import math
 import threading
 import uuid
 import json
-from Audio.AudioFile import AudioSource
-from Audio.AudioData import AudioData
+from audio.audio_file import AudioSource
+from audio.audio_data import AudioData
 
 try:  # attempt to use the Python 2 modules
     from urllib import urlencode

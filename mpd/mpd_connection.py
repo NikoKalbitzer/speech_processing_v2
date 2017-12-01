@@ -2,11 +2,17 @@ from mpd import MPDClient
 from time import sleep
 import os
 
-class SongControl(object):
+class ConnectToMPD:
 
     def __init__(self, host, port=None):
+        """
+
+        :param host:
+        :param port:
+        """
 
         self.host = host
+
         if port is None:
             self.port = 6600
         else:
@@ -268,7 +274,7 @@ class SongControl(object):
 
 if __name__ == "__main__":
 
-    s = SongControl("localhost", 6600)
+    s = ConnectToMPD("localhost", 6600)
     print(s.get_player_status())
     #d = s.create_stream_playlist()
     #print(d)

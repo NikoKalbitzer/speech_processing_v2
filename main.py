@@ -1,6 +1,6 @@
 import json
-from speech_to_text import SpeechToText
-from text_to_speech  import TextToSpeech
+from speech_control.speech_to_text import SpeechToText
+from speech_control.text_to_speech  import TextToSpeech
 
 
 if __name__ == '__main__':

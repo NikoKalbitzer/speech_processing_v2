@@ -16,8 +16,11 @@ if __name__ == '__main__':
         stt_response = stt.start_recognize(recognizer='listen')
 
         tts = TextToSpeech(bing_key=BING_KEY, language='germany', gender='Female')
-        resp = tts.request_to_bing(text=stt_response['DisplayText'])
-        tts.play_request(resp)
+        if 'DisplayText' in stt_response:
+            resp = tts.request_to_bing(text=stt_response['DisplayText'])
+            tts.play_request(resp)
+        else:
+            print("no DisplayText available")
 
     except FileNotFoundError as e:
         print(str(e))

@@ -23,13 +23,17 @@ A repository for Speech processing with python:
 
 /configs
     configuration.json
+
 /mpd
     mpd_connection.py
+
 /resources
     supported_languages.py
+
 /speech_control
     speech_to_text.py
     text_to_speech.py
+
 LICENSE
 main.py
 README.md

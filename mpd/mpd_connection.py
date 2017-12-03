@@ -2,17 +2,11 @@ from mpd import MPDClient
 from time import sleep
 import os
 
-class ConnectToMPD:
+class SongControl(object):
 
     def __init__(self, host, port=None):
-        """
-
-        :param host:
-        :param port:
-        """
 
         self.host = host
-
         if port is None:
             self.port = 6600
         else:
@@ -268,13 +262,9 @@ class ConnectToMPD:
             self.client.previous()
 
 
-
-
-"""
-
 if __name__ == "__main__":
 
-    s = ConnectToMPD("localhost", 6600)
+    s = SongControl("192.168.178.37", 6600)
     print(s.get_player_status())
     #d = s.create_stream_playlist()
     #print(d)
@@ -282,7 +272,7 @@ if __name__ == "__main__":
     #d = s.create_music_playlist()
     #print(d)
     #s.set_random()
-    #s.play()
+    s.play()
     #print(s.get_currentsong())
     #print(s.get_player_status())
     #s.set_repeat()
@@ -291,7 +281,7 @@ if __name__ == "__main__":
     #print(s.get_current_song_playlist())
     #s.next()
     #s.set_volume(80)
-    #sleep(10)
+    sleep(10)
     s.stop()
 
-"""
+

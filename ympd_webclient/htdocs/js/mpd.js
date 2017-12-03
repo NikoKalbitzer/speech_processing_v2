@@ -594,6 +594,11 @@ function clickPlay() {
         socket.send('MPD_API_SET_PAUSE');
 }
 
+function clickMicrophone() {
+
+    console.log("hallo");
+}
+
 function basename(path) {
     return path.split('/').reverse()[0];
 }

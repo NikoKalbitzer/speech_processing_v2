@@ -125,14 +125,14 @@
             recognizer.AudioSource.TurnOff();
         }
 
-        var startBtn, stopBtn, hypothesisDiv, phraseDiv, statusDiv;
-        var key, languageOptions, formatOptions, recognitionMode, inputSource, filePicker;
+        var startBtn, hypothesisDiv, phraseDiv, statusDiv;
+        var key, languageOptions
         var SDK;
         var recognizer;
         document.addEventListener("DOMContentLoaded", function () {
             createBtn = document.getElementById("createBtn");
             startBtn = document.getElementById("startBtn");
-            stopBtn = document.getElementById("stopBtn");
+            //stopBtn = document.getElementById("stopBtn");
             phraseDiv = document.getElementById("phraseDiv");
             hypothesisDiv = document.getElementById("hypothesisDiv");
             statusDiv = document.getElementById("statusDiv");
@@ -149,15 +149,16 @@
                     phraseDiv.innerHTML = "";
                     RecognizerStart(SDK, recognizer);
                     startBtn.disabled = true;
-                    stopBtn.disabled = false;
+                    //stopBtn.disabled = false;
 
             });
-
+            /*
             stopBtn.addEventListener("click", function () {
                 RecognizerStop(SDK, recognizer);
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
-            });
+            });*/
+
             Initialize(function (speechSdk) {
                 SDK = speechSdk;
                 startBtn.disabled = false;
@@ -182,6 +183,7 @@
                 hypothesisDiv.innerHTML = "..." + hypothesisDiv.innerHTML.substr(length-400, length);
             }
         }
+
         function OnSpeechEndDetected() {
             stopBtn.disabled = true;
         }
@@ -189,7 +191,7 @@
             hypothesisDiv.innerHTML = "";
             phraseDiv.innerHTML += json + "\n";
         }
+
         function OnComplete() {
             startBtn.disabled = false;
-            stopBtn.disabled = true;
         }

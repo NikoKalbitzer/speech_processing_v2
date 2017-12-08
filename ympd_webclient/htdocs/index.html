@@ -178,11 +178,42 @@
             </a>
           </div>
 
-  	      <div id="btn-responsive-block" class="btn-group-vertical btn-block btn-group-lg" data-toggle="buttons">
+  	      <div id="btn1-responsive-block" class="btn-group-vertical btn-block btn-group-lg" data-toggle="buttons">
   	        <button type="button" class="btn btn-default" id="btnnotify">
   		     <span class="glyphicon glyphicon-comment"></span> Notifications
   	        </button>
   	      </div>
+
+          <div id="btn-microphone" class="btn-group-vertical btn-block btn-group-lg">
+            <button type="button" class="btn btn-default" id="startBtn" onclick="clickMicrophone();">
+              <span class="glyphicon glyphicon-record"></span> Microphone </button>
+          </div>
+          <div class="container">
+            <form>
+              <div class="form-group"><br>
+                <label for="languageOptions"> Language: </label><br>
+                <select class="btn btn-default" id="languageOptions">
+                  <option value="de-DE">Germany</option>
+                  <option value="en-US">English - US</option>
+                  <option value="en-GB">English - GB</option>
+                  <option value="fr-FR">French - FR</option>
+                  <option value="es-ES">Spanish - ES</option>
+                </select>
+              <br>
+                <td>Current hypothesis:</td>
+                <td style="vertical-align: top">
+                <span id="hypothesisDiv" style="width:155px;height:40px;display:block;"></span>
+          </td>
+              </div>
+            </form>
+          </div>
+<td align="right">Status:</td>
+<td align="left"><span id="statusDiv"></span></td>
+<textarea id="phraseDiv" style="display: inline-block;width:150px;height:130px"></textarea>
+          <button id="stopBtn" style="display:none" >stop</button>
+          <input type="file" id="filePicker" accept=".wav" style="display:none"/>
+
+
         </div>
       </div><!-- /.col-md-2 -->
     </div><!-- /.row -->
@@ -330,5 +361,9 @@
   <script src="js/bootstrap-slider.js"></script>
   <script src="js/sammy.js"></script>
   <script src="js/mpd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+  <script src="js/speech.browser.sdk.js"></script>
+  <script src="js/speech_recognition.js"></script>
+
 </body>
 </html>

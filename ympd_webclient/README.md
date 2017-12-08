@@ -1,13 +1,7 @@
-[![Build Status](https://travis-ci.org/notandy/ympd.svg)](https://travis-ci.org/notandy/ympd)
-ympd
-====
-
 Standalone MPD Web GUI written in C, utilizing Websockets and Bootstrap/JS
-
 
 http://www.ympd.org
 
-![ScreenShot](http://www.ympd.org/assets/ympd_github.png)
 
 Dependencies
 ------------
@@ -17,11 +11,32 @@ Dependencies
 Unix Build Instructions
 -----------------------
 
-1. install dependencies, cmake and libmpdclient are available from all major distributions.
-2. create build directory ```cd /path/to/src; mkdir build; cd build```
-3. create makefile ```cmake ..  -DCMAKE_INSTALL_PREFIX:PATH=/usr```
-4. build ```make```
-5. install ```sudo make install``` or just run with ```./ympd```
+1. install dependencies, cmake and libmpdclient are available from all major distributions.<br>
+    ````sudo apt install cmake```` <br>
+    install libmpdclient: <br>
+    ````sudo apt-get install libmpdclient-dev```` <br>
+    or install libmpdclient manually: <br>
+    ````git clone https://github.com/MusicPlayerDaemon/libmpdclient.git```` <br>
+    ````sudo apt install meson```` <br>
+    ````meson .output```` <br>
+    ````sudo su```` <br>
+    ````ninja -C .output/```` <br>
+    ````ninja -C .output/ install```` <br>
+2. in directory ympd :<br>
+   create build directory: <br>
+   ```mkdir build; cd build```<br>
+   check if c++ compiler is installed: <br>
+   ````g++ --version````<br>
+   install, if no c++ compiler is available:<br>
+   ````sudo apt install g++````<br>
+   install libssl-dev package:<br>
+   ````sudo apt install libssl-dev````<br>
+3. create makefile <br>
+   ```cmake ..  -DCMAKE_INSTALL_PREFIX:PATH=/usr```
+4. build <br>
+   ```make```
+5. install <br>
+   ```sudo make install``` or just run with ```./ympd```
 
 Run flags
 ---------
@@ -36,21 +51,3 @@ Usage: ./ympd [OPTION]...
  --help                     this help
 ```
 
-SSL Support
------------
-To run ympd with SSL support:
-
-- create a certificate (key and cert in the same file), example:
-```
-# openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 1000 -nodes
-# cat key.pem cert.pem > ssl.pem
-```
-- tell ympd to use a webport using SSL and where to find the certificate: 
-```
-# ./ympd -w "ssl://8081:/path/to/ssl.pem"
-```
-
-Copyright
----------
-
-2013-2014 <andy@ndyk.de>

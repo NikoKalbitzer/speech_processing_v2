@@ -1,25 +1,31 @@
 from mpd import MPDClient
 from time import sleep
-import os
 
-class SongControl(object):
+
+class ControlMPD:
 
     def __init__(self, host, port=None):
+        """
 
-        self.host = host
+        :param host:
+        :param port:
+        """
+        if isinstance(host, str):
+            self.host = host
+        else:
+            raise TypeError("'host' must be Type of String")
+
         if port is None:
             self.port = 6600
         else:
-            self.port = port
+            if isinstance(port, int):
+                self.port = port
+            else:
+                raise TypeError('port must be Type of Int')
 
         self.client = MPDClient()
-        self.playlist = None
-
-        if self.host and self.port is not None:
-            self.client.connect(host, port)
-            self.connected = True
-        else:
-            self.connected = False
+        self.client.connect(host, port)
+        self.connected = True
 
     def __del__(self):
         """
@@ -29,22 +35,42 @@ class SongControl(object):
         self.client.close()
         self.client.disconnect()
 
+    def match_in_database(self, match_str):
+        """
+
+        :return:
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        if isinstance(match_str, str):
+            db_response = self.client.search('any', match_str)
+        else:
+            raise TypeError("'match_str' must be Type of String")
+
+        for resp in db_response:
+            file = resp.get('file')
+            self.client.add(file)
+        current_playlist = self.get_current_song_playlist()
+        songpos = len(current_playlist) - len(db_response)
+        return songpos
+
     def update_database(self):
         """
         when changes in music folder were made, update the database
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
-            response = self.client.update()
-            return response
+            self.client.update()
+            return True
 
     def create_music_playlist(self):
         """
         creates the music playlist for all songs the music folder contains
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         if self.clear_current_playlist():
             if self.update_database():
                 music_list = self.client.listall()
@@ -55,21 +81,6 @@ class SongControl(object):
                     all_songs.append(single_song)
                 return all_songs
 
-    def create_stream_playlist(self):
-        """
-        creates the stream playlist for all radio streams the playlist folder contains
-        """
-        if not self.connected:
-            return None
-        if self.clear_current_playlist():
-            if self.update_database():
-                state = self.get_list_of_playlists()
-                all_playlists = list()
-                for i in range(0, len(state)):
-                    single_playlist = state[i].get("playlist")
-                    self.client.load(single_playlist)
-                    all_playlists.append(single_playlist)
-                return all_playlists
 
 # QUERYING USEFUL INFORMATION
 
@@ -78,7 +89,7 @@ class SongControl(object):
         displays the song info of the current song
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         return self.client.currentsong()
 
@@ -87,7 +98,7 @@ class SongControl(object):
         displays the current playlist
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         return self.client.playlist()
 
@@ -96,43 +107,19 @@ class SongControl(object):
         reports the current status of the player and the volume level
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         return self.client.status()
 
 
 # PLAYBACK OPTIONS
-    # TODO
-    def volume_full(self):
-        """
-         set volume in range of 0-100
-        """
-        if not self.connected:
-            return None
-        os.system("amixer cset numid=1 207")
-
-    def volume_middle(self):
-        """
-         set volume in range of 0-100
-        """
-        if not self.connected:
-            return None
-        os.system("amixer cset numid=1 130")
-
-    def volume_mute(self):
-        """
-         set volume in range of 0-100
-        """
-        if not self.connected:
-            return None
-        os.system("amixer cset numid=1 0")
 
     def set_random(self):
         """
         sets random state ON or OFF
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         state = self.get_player_status()
         random_state = state.get('random')
@@ -147,7 +134,7 @@ class SongControl(object):
         sets repeat state ON or OFF
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         state = self.get_player_status()
         repeat_state = state.get('repeat')
@@ -164,7 +151,7 @@ class SongControl(object):
         clears the current playlist
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
             self.client.clear()
             return True
@@ -175,23 +162,13 @@ class SongControl(object):
         :param songid:
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         if songid is None:
             self.client.delete()
         else:
             self.client.deleteid(songid)
 
-# STORED PLAYLISTS IN FOLDER PLAYLISTS
-
-    def get_list_of_playlists(self):
-        """
-        prints a list of the playlist folder
-        """
-        if not self.connected:
-            return None
-
-        return self.client.listplaylists()
 
 # CONTROLLING PLAYBACK
 
@@ -200,7 +177,7 @@ class SongControl(object):
         toggles pause/ resume playing
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         states = self.get_player_status()
         player_state = states.get('state')
@@ -217,7 +194,7 @@ class SongControl(object):
         shuffles the current playlist
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
             self.client.shuffle()
 
@@ -226,7 +203,7 @@ class SongControl(object):
         starts playing
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
 
         if songpos is None:
             self.client.play()
@@ -238,7 +215,7 @@ class SongControl(object):
         stops playing
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
             self.client.stop()
 
@@ -248,7 +225,7 @@ class SongControl(object):
         """
 
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
             self.client.next()
 
@@ -257,31 +234,18 @@ class SongControl(object):
         plays previous song in the playlist
         """
         if not self.connected:
-            return None
+            raise ConnectionError("mpd client lost the connection")
         else:
             self.client.previous()
 
 
 if __name__ == "__main__":
 
-    s = SongControl("192.168.178.37", 6600)
-    print(s.get_player_status())
-    #d = s.create_stream_playlist()
-    #print(d)
-    #s.clear_current_playlist()
-    #d = s.create_music_playlist()
-    #print(d)
-    #s.set_random()
-    s.play()
-    #print(s.get_currentsong())
-    #print(s.get_player_status())
-    #s.set_repeat()
+    mpdclient = ControlMPD("192.168.178.37", 6600)
+    #mpdclient.clear_current_playlist()
+    #mpdclient.match_in_database()
+    #print(mpdclient.get_current_song_playlist())
+    #mpdclient.play(2)
     #sleep(10)
-    #s.pause()
-    #print(s.get_current_song_playlist())
-    #s.next()
-    #s.set_volume(80)
-    sleep(10)
-    s.stop()
-
+    mpdclient.stop()
 

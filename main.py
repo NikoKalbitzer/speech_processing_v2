@@ -1,7 +1,9 @@
 import json
 from speech_control.speech_to_text import SpeechToText
-from speech_control.text_to_speech  import TextToSpeech
-
+from speech_control.text_to_speech import TextToSpeech
+from music_player.mpd_connection import ControlMPD
+from mpd import CommandError
+from time import sleep
 
 if __name__ == '__main__':
 
@@ -12,15 +14,23 @@ if __name__ == '__main__':
 
         BING_KEY = json_data.get('Bing_Key')
 
-        stt = SpeechToText(bing_key=BING_KEY, mode='interactive', language='germany')
+        stt = SpeechToText(bing_key=BING_KEY, mode='interactive', language='united_states')
         stt_response = stt.start_recognize(recognizer='listen')
+        str_for_mpd = stt_response['DisplayText'].strip(".").split(" ")
+        print(str_for_mpd)
 
-        tts = TextToSpeech(bing_key=BING_KEY, language='germany', gender='Female')
-        if 'DisplayText' in stt_response:
-            resp = tts.request_to_bing(text=stt_response['DisplayText'])
+        mpdclient = ControlMPD(json_data.get('MPD_Server'), json_data.get('MPD_Port'))
+        #mpdclient.clear_current_playlist()
+        try:
+            songpos = mpdclient.match_in_database(str_for_mpd[1])
+            print(songpos)
+            mpdclient.play(songpos)
+            sleep(10)
+            mpdclient.stop()
+        except (IndexError, CommandError):
+            tts = TextToSpeech(bing_key=BING_KEY, language='united_states', gender='Female')
+            resp = tts.request_to_bing(text='Sry i did not understand!')
             tts.play_request(resp)
-        else:
-            print("no DisplayText available")
 
     except FileNotFoundError as e:
         print(str(e))

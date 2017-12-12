@@ -5,7 +5,7 @@ from audio.audio_file import AudioFile
 from audio.recognizer import Recognizer, UnknownValueError, RequestError
 from audio.microphone import Microphone
 from resources.supported_languages import STTLanguageCommand
-
+import time
 
 class SpeechToText:
 
@@ -124,6 +124,16 @@ class SpeechToText:
 
             with AudioFile(audio_file) as source:
                 audio = self.recognizer.record(source)  # read the entire audio file
+
+        elif recognizer is 'listen_in_background':
+            with Microphone() as source:
+                self.recognizer.adjust_for_ambient_noise(source)
+            print("Please say something: ...")
+            stop_listening = self.recognizer.listen_in_background(source, callback=self.get_result)
+            print(stop_listening)
+            #stop_listening()
+            while True:
+                time.sleep(0.1)
 
         else:
             return None

@@ -311,7 +311,7 @@ class Recognizer(AudioSource):
                     except WaitTimeoutError:  # listening timed out, just try again
                         pass
                     else:
-                        if running[0]: callback(self, audio)
+                        if running[0]: callback(audio)
 
         def stopper():
             running[0] = False

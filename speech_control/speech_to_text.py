@@ -5,6 +5,7 @@ from audio.audio_file import AudioFile
 from audio.recognizer import Recognizer, UnknownValueError, RequestError
 from audio.microphone import Microphone
 from resources.supported_languages import STTLanguageCommand
+from music_player.mpd_connection import ControlMPD
 import time
 
 class SpeechToText:
@@ -46,6 +47,7 @@ class SpeechToText:
         self.language_abbreviation = self.stt_lang(self.mode, self.language)
 
         self.recognizer = Recognizer()
+        #self.mpdclient = ControlMPD('192.168.178.37', 6600)
 
     def set_language(self, language):
         """
@@ -154,12 +156,22 @@ class SpeechToText:
         """
 
         result = self.recognizer.recognize_bing(audio, key=self.bing_key, language=self.language_abbreviation, show_all=True)
-
+        mpdclient = ControlMPD('192.168.178.37', 6600)
         if 'DisplayText' in result:
             try:
                 print("You said: " + result['DisplayText'])
-                #return result['DisplayText']
-                return result
+
+                str_for_mpd = result['DisplayText'].strip(".").split(" ")
+                print(str_for_mpd)
+                if str_for_mpd[0] == 'Stop':
+                    mpdclient.stop()
+                    print("stop")
+                else:
+                    songpos = mpdclient.match_in_database(str_for_mpd[1])
+                    mpdclient.play(songpos)
+                    print(str_for_mpd[1])
+                    #return result['DisplayText']
+                    #return result
             except UnknownValueError:
                 print("Bing Voice Recognition could not understand audio")
             except RequestError as e:

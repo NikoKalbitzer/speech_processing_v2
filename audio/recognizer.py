@@ -311,7 +311,8 @@ class Recognizer(AudioSource):
                     except WaitTimeoutError:  # listening timed out, just try again
                         pass
                     else:
-                        if running[0]: callback(audio)
+                        if running[0]:
+                            callback(audio)
 
         def stopper():
             running[0] = False
@@ -321,6 +322,7 @@ class Recognizer(AudioSource):
         listener_thread.daemon = True
         listener_thread.start()
         return stopper
+        #return que.get()
 
     def recognize_bing(self, audio_data, key, language="en-US", show_all=False):
         """

@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
         stt_response = stt.start_recognize(recognizer='listen_in_background')
         str_for_mpd = stt_response['DisplayText'].strip(".").split(" ")
-        print(str_for_mpd)
+        #print(str_for_mpd)
         #mpdclient.clear_current_playlist()
         #print(mpdclient.get_current_song_playlist())
         #mpdclient.update_database()

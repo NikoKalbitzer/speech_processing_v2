@@ -155,5 +155,5 @@ def playRandom():
 
 
 if __name__ == '__main__':
-    resp = parse("play next song", 1)
+    resp = parse("stop the current song", 1)
     #print(resp)

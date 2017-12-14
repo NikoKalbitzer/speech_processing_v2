@@ -10,6 +10,7 @@ artists = [ "david bowie", "five finger death punch", "alan walker"]
 
 # not working for now - ConnectionRefusedError: [Errno 111] Connection refused
 mpdcontrol = ControlMPD("192.168.178.37", 6600)
+mpdcontrol.start()
 
 def playGerneSongArtist(arguments):
     # determine if this chunks are gernes, artists or songs
@@ -75,15 +76,20 @@ def stop():
 
 def pause():
     print(colored("RESULT: pause()", color))
+    mpdcontrol.pause()
 
 def resume():
     print(colored("RESULT: resume()", color))
+    mpdcontrol.play()
 
 def playOrResume():
     print(colored("RESULT: playOrResume()", color))
 
 def playRandom():
     print(colored("RESULT: playRandom()", color))
+    mpdcontrol.shuffle()
+    mpdcontrol.set_random()
+    mpdcontrol.play()
 
 def playNext():
     print(colored("RESULT: playNext()", color))

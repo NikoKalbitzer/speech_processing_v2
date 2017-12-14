@@ -1,3 +1,4 @@
+import threading
 from mpd import MPDClient
 from time import sleep
 
@@ -6,9 +7,10 @@ class ControlMPD:
 
     def __init__(self, host, port=None):
         """
+        Creates a MPD client to control
 
-        :param host:
-        :param port:
+        :param host: hostname for the MPD server
+        :param port: port to communicate with the MPD server
         """
         if isinstance(host, str):
             self.host = host
@@ -25,15 +27,55 @@ class ControlMPD:
 
         self.client = MPDClient()
         self.client.connect(host, port)
+
         self.connected = True
+        self.__thread = None
+        self.__running = False
 
     def __del__(self):
         """
         Destructor
         """
+        self.stop()
         self.connected = False
         self.client.close()
         self.client.disconnect()
+
+    def stop(self):
+        """
+        method to stop the thread
+        """
+        if self.__thread is not None:
+            self.__running = False
+            self.__thread.join()
+            self.__thread = None
+
+    def start(self, as_daemon=None):
+        """
+        method to start the __run thread
+
+        as_daemon: boolean attribute to run the thread as daemon or not
+        """
+        if self.__thread is None:
+            self.__running = True
+            self.__thread = threading.Thread(target=self.__run)
+            # default behavior run thread as daemon
+            if as_daemon is None:
+                self.__thread.daemon = True
+            else:
+                if not isinstance(as_daemon, bool):
+                    raise TypeError("'as_daemon' must be a boolean type")
+                else:
+                    self.__thread.daemon = as_daemon
+            self.__thread.start()
+
+    def __run(self):
+        """
+        daemon thread to ping to the mpd client
+        """
+        while self.__running:
+            self.client.ping()
+            sleep(55)
 
     def match_in_database(self, match_str):
         """
@@ -71,6 +113,7 @@ class ControlMPD:
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
+
         if self.clear_current_playlist():
             if self.update_database():
                 music_list = self.client.listall()
@@ -81,6 +124,40 @@ class ControlMPD:
                     all_songs.append(single_song)
                 return all_songs
 
+    def is_artist_in_db(self, artist):
+        """
+        Find artist in db and adds them to the current playlist
+        :return:
+        """
+        if isinstance(artist, str):
+            resp = self.client.find("any", artist)
+            print(resp)
+            if len(resp) == 0:
+                return False
+            else:
+                self.client.findadd("any", artist)
+                return True
+        else:
+            raise TypeError("'artist' must be Type of String")
+
+    def add_genre(self, genre, new_playlist=False):
+        """
+
+        :return:
+        """
+        if isinstance(genre, str):
+            resp_genre = self.client.find("Genre", genre)
+            if len(resp_genre) == 0:
+                return False
+            else:
+                if new_playlist is False:
+                    self.client.findadd("Genre", genre)
+                else:
+                    self.clear_current_playlist()
+                    self.client.findadd("Genre", genre)
+                return True
+        else:
+            raise TypeError("'genre' must be Type of String")
 
 # QUERYING USEFUL INFORMATION
 
@@ -111,6 +188,51 @@ class ControlMPD:
 
         return self.client.status()
 
+    def get_tagtypes(self):
+        """
+        get the available tagtypes from the mpd server
+
+        :return: list containing available tagtypes
+                 ['Artist', 'Album', 'Title', 'Track', 'Name', 'Genre', 'Date', 'Composer', 'Performer', 'Disc']
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        return self.client.tagtypes()
+
+# CURRENT PLAYLIST
+
+    def add_song_to_playlist(self, song):
+        """
+
+        :param song:
+        :return:
+        """
+        if isinstance(song, str):
+            self.client.add(song)
+
+    def clear_current_playlist(self):
+        """
+        clears the current playlist
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+        else:
+            self.client.clear()
+            return True
+
+    def delete_song(self, songid=None):
+        """
+        deletes a song from the playlist
+        :param songid:
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        if songid is None:
+            self.client.delete()
+        else:
+            self.client.deleteid(songid)
 
 # PLAYBACK OPTIONS
 
@@ -143,32 +265,6 @@ class ControlMPD:
             self.client.repeat(1)
         else:
             self.client.repeat(0)
-
-# CURRENT PLAYLIST
-
-    def clear_current_playlist(self):
-        """
-        clears the current playlist
-        """
-        if not self.connected:
-            raise ConnectionError("mpd client lost the connection")
-        else:
-            self.client.clear()
-            return True
-
-    def delete_song(self, songid=None):
-        """
-        deletes a song from the playlist
-        :param songid:
-        """
-        if not self.connected:
-            raise ConnectionError("mpd client lost the connection")
-
-        if songid is None:
-            self.client.delete()
-        else:
-            self.client.deleteid(songid)
-
 
 # CONTROLLING PLAYBACK
 
@@ -242,10 +338,15 @@ class ControlMPD:
 if __name__ == "__main__":
 
     mpdclient = ControlMPD("192.168.178.37", 6600)
+    print(mpdclient.add_genre("Rock"))
     #mpdclient.clear_current_playlist()
+    #print(mpdclient.get_current_song_playlist())
+    #mpdclient.add_song_to_playlist("Walk on Water (Audio)")
+    #mpdclient.create_music_playlist()
+    #print(mpdclient.get_current_song_playlist())
     #mpdclient.match_in_database()
     #print(mpdclient.get_current_song_playlist())
     #mpdclient.play(2)
     #sleep(10)
-    mpdclient.stop()
+    #mpdclient.stop()
 

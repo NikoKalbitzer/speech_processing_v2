@@ -36,12 +36,12 @@ class ControlMPD:
         """
         Destructor
         """
-        self.stop()
+        self.stop_thread()
         self.connected = False
         self.client.close()
         self.client.disconnect()
 
-    def stop(self):
+    def stop_thread(self):
         """
         method to stop the thread
         """
@@ -77,26 +77,6 @@ class ControlMPD:
             self.client.ping()
             sleep(55)
 
-    def match_in_database(self, match_str):
-        """
-
-        :return:
-        """
-        if not self.connected:
-            raise ConnectionError("mpd client lost the connection")
-
-        if isinstance(match_str, str):
-            db_response = self.client.search('any', match_str)
-        else:
-            raise TypeError("'match_str' must be Type of String")
-
-        for resp in db_response:
-            file = resp.get('file')
-            self.client.add(file)
-        current_playlist = self.get_current_song_playlist()
-        songpos = len(current_playlist) - len(db_response)
-        return songpos
-
     def update_database(self):
         """
         when changes in music folder were made, update the database
@@ -124,40 +104,124 @@ class ControlMPD:
                     all_songs.append(single_song)
                 return all_songs
 
-    def is_artist_in_db(self, artist):
+    def add_artist_to_pl(self, artist, new_playlist=False):
         """
-        Find artist in db and adds them to the current playlist
-        :return:
+        Find artist in db and adds them to the current/new playlist
+
+        :param artist: artist_string to add to playlist
+        :param new_playlist: False as default, Yes, create new playlist
+        :return: song_pos to play for, if selected artist in database
+                 None, if selected artist not in database
         """
         if isinstance(artist, str):
-            resp = self.client.find("any", artist)
-            print(resp)
-            if len(resp) == 0:
-                return False
+            resp_artist = self.client.find("Artist", artist)
+            if len(resp_artist) == 0:
+                song_pos = self.advanced_search_in_db(artist)
+                if song_pos is None:
+                    return None
+                else:
+                    return song_pos
             else:
-                self.client.findadd("any", artist)
-                return True
+                if new_playlist is False:
+                    song_pos = self.get_current_songpos()
+                    self.client.findadd("Artist", artist)
+                else:
+                    self.clear_current_playlist()
+                    self.client.findadd("Artist", artist)
+                    song_pos = 0
+                return song_pos
         else:
             raise TypeError("'artist' must be Type of String")
 
-    def add_genre(self, genre, new_playlist=False):
+    def add_title_to_pl(self, title):
         """
+        Add desired genre to playlist, if genre is in db available
 
-        :return:
+        :param title: title_string to add to playlist
+        :return: song_pos to play for, if selected title in database
+                 None, if selected title not in database
+
+        """
+        if isinstance(title, str):
+            resp_title = self.client.find("Title", title)
+            if len(resp_title) == 0:
+                song_pos = self.advanced_search_in_db(title)
+                if song_pos is None:
+                    return None
+                else:
+                    return song_pos
+            else:
+                song_pos = self.get_current_songpos()
+                self.client.findadd("Title", title)
+                return song_pos
+
+        else:
+            raise TypeError("'title must be Type of String")
+
+    def add_genre_to_pl(self, genre, new_playlist=False):
+        """
+        Add desired genre to playlist, if genre is in db available
+
+        :param genre: genre_string to add to playlist
+        :param new_playlist: False as default, Yes, create new playlist
+        :return: song_pos to play for, if selected genre in database
+                 None, if selected genre not in database
         """
         if isinstance(genre, str):
             resp_genre = self.client.find("Genre", genre)
             if len(resp_genre) == 0:
-                return False
+                song_pos = self.advanced_search_in_db(genre)
+                if song_pos is None:
+                    return None
+                else:
+                    return song_pos
             else:
                 if new_playlist is False:
+                    song_pos = self.get_current_songpos()
                     self.client.findadd("Genre", genre)
                 else:
                     self.clear_current_playlist()
                     self.client.findadd("Genre", genre)
-                return True
+                    song_pos = 0
+                return song_pos
         else:
             raise TypeError("'genre' must be Type of String")
+
+    def advanced_search_in_db(self, search_str, type=None):
+        """
+        search for specific string in database
+        type can be any, Artist, Title, Genre..
+
+        :param search_str: string to search in database
+        :param type: string, "any", "Artist", "Title", "Genre" ..
+        :return: None, if no match were found
+                 song_pos for the 'play method' to play the requested string
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        if isinstance(search_str, str):
+            if type is None:
+                db_response = self.client.search("any", search_str)
+            else:
+                if isinstance(type, str):
+                    db_response = self.client.search(type, search_str)
+                else:
+                    raise TypeError("'type' must be Type of String")
+            if len(db_response) == 0:
+                return None
+            else:
+                song_pos = self.get_current_songpos()
+                print(song_pos)
+                for resp in db_response:
+                    self.client.add(resp.get('file'))
+                if song_pos is None:
+                    song_pos = 0
+                    return song_pos
+                else:
+                    return song_pos
+        else:
+            raise TypeError("'search_str' must be Type of String")
 
 # QUERYING USEFUL INFORMATION
 
@@ -199,6 +263,21 @@ class ControlMPD:
             raise ConnectionError("mpd client lost the connection")
 
         return self.client.tagtypes()
+
+    def get_current_songpos(self):
+        """
+
+        :return:
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        pos_list = [pos.get('pos') for pos in self.client.playlistid()]
+        pos_list = [int(pos) for pos in pos_list]
+        if len(pos_list) > 0:
+            return int(max(pos_list)) + 1
+        else:
+            return None
 
 # CURRENT PLAYLIST
 
@@ -338,15 +417,14 @@ class ControlMPD:
 if __name__ == "__main__":
 
     mpdclient = ControlMPD("192.168.178.37", 6600)
-    print(mpdclient.add_genre("Rock"))
     #mpdclient.clear_current_playlist()
-    #print(mpdclient.get_current_song_playlist())
-    #mpdclient.add_song_to_playlist("Walk on Water (Audio)")
-    #mpdclient.create_music_playlist()
-    #print(mpdclient.get_current_song_playlist())
-    #mpdclient.match_in_database()
-    #print(mpdclient.get_current_song_playlist())
-    #mpdclient.play(2)
-    #sleep(10)
-    #mpdclient.stop()
+    #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
+    song_pos = mpdclient.add_title_to_pl("Rattle")
+    print(song_pos)
+    print(mpdclient.get_current_song_playlist())
+    mpdclient.play(song_pos)
+
+
+    sleep(155)
+    mpdclient.stop()
 

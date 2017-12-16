@@ -31,6 +31,7 @@ class ControlMPD:
         self.connected = True
         self.__thread = None
         self.__running = False
+        self.start()
 
     def __del__(self):
         """
@@ -124,11 +125,14 @@ class ControlMPD:
             else:
                 if new_playlist is False:
                     song_pos = self.get_current_songpos()
+                    #if song_pos is None:
+                    #    song_pos = 0
                     self.client.findadd("Artist", artist)
                 else:
                     self.clear_current_playlist()
                     self.client.findadd("Artist", artist)
                     song_pos = 0
+
                 return song_pos
         else:
             raise TypeError("'artist' must be Type of String")
@@ -212,7 +216,6 @@ class ControlMPD:
                 return None
             else:
                 song_pos = self.get_current_songpos()
-                print(song_pos)
                 for resp in db_response:
                     self.client.add(resp.get('file'))
                 if song_pos is None:
@@ -277,7 +280,42 @@ class ControlMPD:
         if len(pos_list) > 0:
             return int(max(pos_list)) + 1
         else:
-            return None
+            return 0
+
+    def get_all_artists_in_db(self):
+        """
+
+        :return:
+        """
+
+        return [artist.get('artist') for artist in self.client.listallinfo() if artist.get('artist') is not None]
+
+    def get_all_titles_in_db(self):
+        """
+
+        :return:
+        """
+        return [title.get('title') for title in self.client.listallinfo() if title.get('title') is not None]
+
+    def get_all_genres_in_db(self):
+        """
+
+        :return:
+        """
+        return [genre.get('genre') for genre in self.client.listallinfo() if genre.get('genre') is not None]
+
+    def is_artist_in_db(self, artist):
+        """
+
+        :return:
+        """
+        resp_artist = self.client.find("Artist", artist)
+        print("resp_artist: {}".format(resp_artist))
+        if len(resp_artist) > 0:
+            return True
+        else:
+            return False
+
 
 # CURRENT PLAYLIST
 
@@ -419,12 +457,5 @@ if __name__ == "__main__":
     mpdclient = ControlMPD("192.168.178.37", 6600)
     #mpdclient.clear_current_playlist()
     #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
-    song_pos = mpdclient.add_title_to_pl("Rattle")
-    print(song_pos)
-    print(mpdclient.get_current_song_playlist())
-    mpdclient.play(song_pos)
-
-
-    sleep(155)
-    mpdclient.stop()
+    print(mpdclient.get_all_genres_in_db())
 

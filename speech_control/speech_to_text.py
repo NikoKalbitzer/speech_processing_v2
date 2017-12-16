@@ -161,7 +161,8 @@ class SpeechToText:
         if 'DisplayText' in result:
             try:
                 print("You said: " + result['DisplayText'])
-                parse(result['DisplayText'], 1)
+                nlp_resp = parse(result['DisplayText'], 1)
+                print(nlp_resp)
             except UnknownValueError:
                 print("Bing Voice Recognition could not understand audio")
             except RequestError as e:

@@ -8,9 +8,11 @@ A repository for Speech processing with python:
 - Speech control of the MPD Client
 
 ## Dependencies
-- PyAudio
-- python-mpd2
-- monotonic
+- PyAudio (pip3 install pyaudio, apt-get install portaudio19-dev)
+- python-mpd2 (pip3 install python-mpd2)
+- monotonic (pip3 install monotonic)
+- spacy (pip3 install spacy)
+- expiringdict (pip3 install expiringdict)
 
 ## Project Layout
 <pre><code>

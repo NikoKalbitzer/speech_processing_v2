@@ -174,5 +174,5 @@ def playRandom():
 
 
 if __name__ == '__main__':
-    resp = parse("Play Klingande", 1)
+    resp = parse("stop current song", 1)
     #print(resp)

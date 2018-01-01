@@ -10,7 +10,7 @@ songs = [ "heroes", "alone" ]
 artists = [ "david bowie", "five finger death punch", "alan walker", "metallica", "imagine dragons", "volbeat"]
 
 # not working for now - ConnectionRefusedError: [Errno 111] Connection refused
-mpdcontrol = ControlMPD("192.168.43.53", 6600)
+mpdcontrol = ControlMPD("192.168.178.37", 6600)
 #mpdcontrol.clear_current_playlist()
 
 def OBSOLETEplayGerneSongArtist(arguments):

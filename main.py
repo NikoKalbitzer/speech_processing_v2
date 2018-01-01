@@ -1,4 +1,5 @@
 import json
+import requests
 from speech_control.speech_to_text import SpeechToText
 from speech_control.text_to_speech import TextToSpeech
 
@@ -10,10 +11,17 @@ if __name__ == '__main__':
             json_data = json.load(json_file)
 
         BING_KEY = json_data.get('Bing_Key')
+        url_server="http://127.0.0.1:5000"
 
         stt = SpeechToText(bing_key=BING_KEY, mode='interactive', language='united_states')
+        stt_resp = stt.start_recognize(recognizer='listen')
 
-        stt_response = stt.start_recognize(recognizer='listen_in_background')
+        if 'DisplayText' in stt_resp:
+            print(stt_resp['DisplayText'])
+            #send stt response to parse_server
+            requests.post(url=url_server, data=stt_resp['DisplayText'])
+        else:
+            print("Did not understand, please retry")
 
     except FileNotFoundError as e:
         print(str(e))

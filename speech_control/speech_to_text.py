@@ -5,9 +5,8 @@ from audio.audio_file import AudioFile
 from audio.recognizer import Recognizer, UnknownValueError, RequestError
 from audio.microphone import Microphone
 from resources.supported_languages import STTLanguageCommand
-from music_player.mpd_connection import ControlMPD
 import time
-from MPD_NLP.service.parse import *
+
 
 class SpeechToText:
 
@@ -48,7 +47,6 @@ class SpeechToText:
         self.language_abbreviation = self.stt_lang(self.mode, self.language)
 
         self.recognizer = Recognizer()
-        #self.mpdclient = ControlMPD('192.168.178.37', 6600)
 
     def set_language(self, language):
         """
@@ -157,12 +155,14 @@ class SpeechToText:
         """
 
         result = self.recognizer.recognize_bing(audio, key=self.bing_key, language=self.language_abbreviation, show_all=True)
-
+        return result
+        """
         if 'DisplayText' in result:
             try:
-                print("You said: " + result['DisplayText'])
-                nlp_resp = parse(result['DisplayText'], 1)
-                print(nlp_resp)
+                #print("You said: " + result['DisplayText'])
+                #nlp_resp = parse(result['DisplayText'], 1)
+                #print(nlp_resp)
+                return result['DisplayText']
             except UnknownValueError:
                 print("Bing Voice Recognition could not understand audio")
             except RequestError as e:
@@ -170,6 +170,7 @@ class SpeechToText:
 
         else:
             return result
+        """
 
     def record_to_wav(self, output_file=None, record_duration=5):
         """

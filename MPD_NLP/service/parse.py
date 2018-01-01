@@ -1,17 +1,15 @@
 import spacy
-from termcolor import colored
 import MPD_NLP.service.mpd_provider_module as mpm
 from MPD_NLP.service import verbalizer
-from enum import Enum
 from expiringdict import ExpiringDict
 from random import randint
 from MPD_NLP.service.conversationState import ConversationStateEnum, ConversationState
-from MPD_NLP.service.response import Response, ErrorCodeEnum
+#from MPD_NLP.service.response import Response, ErrorCodeEnum
 from flask import Flask, request
 app = Flask(__name__)
 
-#nlp = spacy.load("en_core_web_lg")
-nlp = spacy.load("en")
+nlp = spacy.load("en_core_web_lg")
+#nlp = spacy.load("en")
 
 # conversation state is stored in a expiringdict
 # note that there an additional state which is also the initial state which is considered if no state is stored
@@ -22,14 +20,15 @@ states = ExpiringDict(max_len=100, max_age_seconds=10)
 
 print("READY for requests")
 
-
-
-@app.route("/")
+@app.route("/", methods=['POST'])
 def parseREST():
-    input = request.args.get('input')
-    userid = request.args.get('userid')
-    print("REQUEST from id " + userid + ": " + input)
-    return parse(input, userid)
+    bytes_obj = request.data
+    resp_string = bytes_obj.decode('utf-8')
+    #input = request.args.get('input')
+    #userid = request.args.get('userid')
+    #print("REQUEST from id " + userid + ": " + input)
+    userid = 1
+    return parse(resp_string, userid)
 
 
 def parse(input, userid):
@@ -174,5 +173,6 @@ def playRandom():
 
 
 if __name__ == '__main__':
-    resp = parse("stop current song", 1)
+    #resp = parse("play Alan Walker", 1)
     #print(resp)
+    app.run(debug=True)

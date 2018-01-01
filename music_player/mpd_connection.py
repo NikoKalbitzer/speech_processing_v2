@@ -191,13 +191,15 @@ class ControlMPD:
         else:
             raise TypeError("'genre' must be Type of String")
 
-    def advanced_search_in_db(self, search_str, type=None):
+    def advanced_search_in_db(self, search_str, search_type=None, s_pos=True):
         """
         search for specific string in database
-        type can be any, Artist, Title, Genre..
+        search_type can be any, Artist, Title, Genre..
 
         :param search_str: string to search in database
-        :param type: string, "any", "Artist", "Title", "Genre" ..
+        :param search_type: string, "any", "Artist", "Title", "Genre" ..
+        :param s_pos: boolean, if True, it will be returned song_pos and db_response
+                               if False, it will be returned only db_response
         :return: None, if no match were found
                  song_pos for the 'play method' to play the requested string
         """
@@ -205,24 +207,26 @@ class ControlMPD:
             raise ConnectionError("mpd client lost the connection")
 
         if isinstance(search_str, str):
-            if type is None:
+            if search_type is None:
                 db_response = self.client.search("any", search_str)
             else:
-                if isinstance(type, str):
-                    db_response = self.client.search(type, search_str)
+                if isinstance(search_type, str):
+                    db_response = self.client.search(search_type, search_str)
                 else:
                     raise TypeError("'type' must be Type of String")
             if len(db_response) == 0:
                 return None
+            elif s_pos is False:
+                return db_response
             else:
                 song_pos = self.get_current_songpos()
                 for resp in db_response:
                     self.client.add(resp.get('file'))
                 if song_pos is None:
                     song_pos = 0
-                    return song_pos
+                    return song_pos, db_response
                 else:
-                    return song_pos
+                    return song_pos, db_response
         else:
             raise TypeError("'search_str' must be Type of String")
 
@@ -284,38 +288,82 @@ class ControlMPD:
 
     def get_all_artists_in_db(self):
         """
+        method to get all artists in database
 
-        :return:
+        :return: list, that contains all artists from database
         """
 
         return [artist.get('artist') for artist in self.client.listallinfo() if artist.get('artist') is not None]
 
     def get_all_titles_in_db(self):
         """
+        method to get all titles in database
 
-        :return:
+        :return: list, that contains all titles from database
         """
         return [title.get('title') for title in self.client.listallinfo() if title.get('title') is not None]
 
     def get_all_genres_in_db(self):
         """
+        method to get all genres in database
 
-        :return:
+        :return: list, that contains all genres from database
         """
         return [genre.get('genre') for genre in self.client.listallinfo() if genre.get('genre') is not None]
 
     def is_artist_in_db(self, artist):
         """
+        boolean method to check, if desired artist is in db available
 
-        :return:
+        :param artist: string, artist to search for
+        :return: True, if artist is available
+                 False, if artist is not available
         """
         resp_artist = self.client.find("Artist", artist)
-        print("resp_artist: {}".format(resp_artist))
         if len(resp_artist) > 0:
             return True
         else:
-            return False
+            db_response = self.advanced_search_in_db(search_str=artist, s_pos=False)
+            if len(db_response) > 0:
+                return True
+            else:
+                return False
 
+    def is_title_in_db(self, title):
+        """
+        boolean method to check, if desired title is in db available
+
+        :param title: string, title to search for
+        :return: True, if title is available
+                 False, if title is not available
+        """
+        resp_title = self.client.find("title", title)
+        if len(resp_title) > 0:
+            return True
+        else:
+            db_response = self.advanced_search_in_db(search_str=title, s_pos=False)
+            if len(db_response) > 0:
+                return True
+            else:
+                return False
+
+    def is_genre_in_db(self, genre):
+        """
+        boolean method to check, if desired genre is in db available
+
+        :param genre: string, genre to search for
+        :return: True, if genre is available
+                 False, if genre is not available
+        """
+        resp_genre = self.client.find("genre", genre)
+        if len(resp_genre) > 0:
+            return True
+        else:
+            db_response = self.advanced_search_in_db(search_str=genre, s_pos=False)
+            if len(db_response) > 0:
+                return True
+            else:
+                return False
 
 # CURRENT PLAYLIST
 
@@ -455,7 +503,14 @@ class ControlMPD:
 if __name__ == "__main__":
 
     mpdclient = ControlMPD("192.168.178.37", 6600)
+    print(mpdclient.get_all_artists_in_db())
+    print(mpdclient.get_current_song_playlist())
+    print(mpdclient.is_artist_in_db("alan walker"))
+    print(mpdclient.get_current_song_playlist())
+    #mpdclient.stop()
     #mpdclient.clear_current_playlist()
     #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
-    print(mpdclient.get_all_genres_in_db())
+    #mpdclient.update_database()
+    #print(mpdclient.get_all_genres_in_db())
+    #print(mpdclient.get_all_artists_in_db())
 

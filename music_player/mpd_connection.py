@@ -320,14 +320,18 @@ class ControlMPD:
                  False, if artist is not available
         """
         resp_artist = self.client.find("Artist", artist)
+        print(resp_artist)
         if len(resp_artist) > 0:
             return True
         else:
             db_response = self.advanced_search_in_db(search_str=artist, s_pos=False)
-            if len(db_response) > 0:
-                return True
-            else:
+            if db_response is None:
                 return False
+            else:
+                if len(db_response) > 0:
+                    return True
+                else:
+                    return False
 
     def is_title_in_db(self, title):
         """
@@ -342,10 +346,13 @@ class ControlMPD:
             return True
         else:
             db_response = self.advanced_search_in_db(search_str=title, s_pos=False)
-            if len(db_response) > 0:
-                return True
-            else:
+            if db_response is None:
                 return False
+            else:
+                if len(db_response) > 0:
+                    return True
+                else:
+                    return False
 
     def is_genre_in_db(self, genre):
         """
@@ -360,10 +367,13 @@ class ControlMPD:
             return True
         else:
             db_response = self.advanced_search_in_db(search_str=genre, s_pos=False)
-            if len(db_response) > 0:
-                return True
-            else:
+            if db_response is None:
                 return False
+            else:
+                if len(db_response) > 0:
+                    return True
+                else:
+                    return False
 
 # CURRENT PLAYLIST
 
@@ -503,9 +513,9 @@ class ControlMPD:
 if __name__ == "__main__":
 
     mpdclient = ControlMPD("192.168.178.37", 6600)
-    print(mpdclient.get_all_artists_in_db())
+    #print(mpdclient.get_all_artists_in_db())
     print(mpdclient.get_current_song_playlist())
-    print(mpdclient.is_artist_in_db("alan walker"))
+    print(mpdclient.is_artist_in_db("e"))
     print(mpdclient.get_current_song_playlist())
     #mpdclient.stop()
     #mpdclient.clear_current_playlist()

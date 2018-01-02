@@ -168,7 +168,7 @@
             if (recognizer != null) {
                 RecognizerStop(SDK, recognizer);
             }
-            recognizer = RecognizerSetup(SDK, "Interactive", languageOptions.value, SDK.SpeechResultFormat["Simple"], "57f24776951f4c1ea98c074099bcf614");
+            recognizer = RecognizerSetup(SDK, "Interactive", languageOptions.value, SDK.SpeechResultFormat["Simple"], "46e8f327f99443ca9d44f9313afc92ac");
         }
         function UpdateStatus(status) {
             statusDiv.innerHTML = status;
@@ -188,8 +188,16 @@
             stopBtn.disabled = true;
         }
         function UpdateRecognizedPhrase(json) {
+            var obj = JSON.parse(json)
             hypothesisDiv.innerHTML = "";
-            phraseDiv.innerHTML += json + "\n";
+            phraseDiv.innerHTML += obj.DisplayText + "\n";
+
+            var client = new XMLHttpRequest();
+            var url = "http://127.0.0.1:5000";
+
+            client.open("POST", url, true);
+            client.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            client.send(obj.DisplayText);
         }
 
         function OnComplete() {

@@ -224,9 +224,9 @@ class ControlMPD:
                     self.client.add(resp.get('file'))
                 if song_pos is None:
                     song_pos = 0
-                    return song_pos, db_response
+                    return song_pos
                 else:
-                    return song_pos, db_response
+                    return song_pos
         else:
             raise TypeError("'search_str' must be Type of String")
 

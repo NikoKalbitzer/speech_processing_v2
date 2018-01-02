@@ -22,7 +22,7 @@ print("READY for requests")
 
 @app.route("/", methods=['POST'])
 def parseREST():
-    bytes_obj = request.data
+    bytes_obj = request.get_data()
     resp_string = bytes_obj.decode('utf-8')
     #input = request.args.get('input')
     #userid = request.args.get('userid')

@@ -6,8 +6,8 @@ from time import sleep
 color = "green"
 
 gernes = ["rock", "hard rock", "alternative", "electro house", "classic rock", "metal"]
-songs = [ "heroes", "alone" ]
-artists = [ "david bowie", "five finger death punch", "alan walker", "metallica", "imagine dragons", "volbeat"]
+#songs = [ "heroes", "alone" ]
+#artists = [ "david bowie", "five finger death punch", "alan walker", "metallica", "imagine dragons", "volbeat"]
 
 # not working for now - ConnectionRefusedError: [Errno 111] Connection refused
 mpdcontrol = ControlMPD("192.168.178.37", 6600)
@@ -24,7 +24,7 @@ def OBSOLETEplayGerneSongArtist(arguments):
     arg_gernes = []
     for chunk in arguments:
         gerne = trimGerne(chunk)
-        if isGerne(gerne) == True:
+        if mpdcontrol.is_genre_in_db(gerne) == True:
             arg_gernes.append(gerne)
 
     if len(arguments) == 0:
@@ -51,7 +51,7 @@ def trimGerne(gerne):
 
 def containsSongOrArtist(arguments):
     for argument in arguments:
-        if mpdcontrol.is_artist_in_db(argument) or isSong(argument):
+        if mpdcontrol.is_artist_in_db(argument) or mpdcontrol.is_title_in_db(argument):
             return True
     return False
 

@@ -596,7 +596,7 @@ function clickPlay() {
 
 function clickMicrophone() {
 
-    socket.send('MPD_API_SET_PAUSE');
+    //socket.send('MPD_API_SET_PAUSE');
     console.log("hallo");
 }
 

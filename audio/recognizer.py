@@ -29,6 +29,36 @@ class RequestError(Exception): pass
 class UnknownValueError(Exception): pass
 
 
+class PortableNamedTemporaryFile(object):
+    """Limited replacement for ``tempfile.NamedTemporaryFile``, except unlike ``tempfile.NamedTemporaryFile``, the file can be opened again while it's currently open, even on Windows."""
+
+    def __init__(self, mode="w+b"):
+        self.mode = mode
+
+    def __enter__(self):
+        # create the temporary file and open it
+        import tempfile
+        file_descriptor, file_path = tempfile.mkstemp()
+        self._file = os.fdopen(file_descriptor, self.mode)
+
+        # the name property is a public field
+        self.name = file_path
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._file.close()
+        os.remove(self.name)
+
+    def write(self, *args, **kwargs):
+        return self._file.write(*args, **kwargs)
+
+    def writelines(self, *args, **kwargs):
+        return self._file.writelines(*args, **kwargs)
+
+    def flush(self, *args, **kwargs):
+        return self._file.flush(*args, **kwargs)
+
+
 class Recognizer(AudioSource):
     def __init__(self):
         """
@@ -430,3 +460,156 @@ class Recognizer(AudioSource):
         if "RecognitionStatus" not in result or result[
             "RecognitionStatus"] != "Success" or "DisplayText" not in result: raise UnknownValueError()
         return result["DisplayText"]
+
+    def recognize_sphinx(self, audio_data, language="en-US", keyword_entries=None, grammar=None, show_all=False):
+        """
+        Performs speech recognition on ``audio_data`` (an ``AudioData`` instance), using CMU Sphinx.
+        The recognition language is determined by ``language``, an RFC5646 language tag like ``"en-US"`` or ``"en-GB"``, defaulting to US English. Out of the box, only ``en-US`` is supported. See `Notes on using `PocketSphinx <https://github.com/Uberi/speech_recognition/blob/master/reference/pocketsphinx.rst>`__ for information about installing other languages. This document is also included under ``reference/pocketsphinx.rst``. The ``language`` parameter can also be a tuple of filesystem paths, of the form ``(acoustic_parameters_directory, language_model_file, phoneme_dictionary_file)`` - this allows you to load arbitrary Sphinx models.
+        If specified, the keywords to search for are determined by ``keyword_entries``, an iterable of tuples of the form ``(keyword, sensitivity)``, where ``keyword`` is a phrase, and ``sensitivity`` is how sensitive to this phrase the recognizer should be, on a scale of 0 (very insensitive, more false negatives) to 1 (very sensitive, more false positives) inclusive. If not specified or ``None``, no keywords are used and Sphinx will simply transcribe whatever words it recognizes. Specifying ``keyword_entries`` is more accurate than just looking for those same keywords in non-keyword-based transcriptions, because Sphinx knows specifically what sounds to look for.
+        Sphinx can also handle FSG or JSGF grammars. The parameter ``grammar`` expects a path to the grammar file. Note that if a JSGF grammar is passed, an FSG grammar will be created at the same location to speed up execution in the next run. If ``keyword_entries`` are passed, content of ``grammar`` will be ignored.
+        Returns the most likely transcription if ``show_all`` is false (the default). Otherwise, returns the Sphinx ``pocketsphinx.pocketsphinx.Decoder`` object resulting from the recognition.
+        Raises a ``speech_recognition.UnknownValueError`` exception if the speech is unintelligible. Raises a ``speech_recognition.RequestError`` exception if there are any issues with the Sphinx installation.
+        """
+        assert isinstance(audio_data, AudioData), "``audio_data`` must be audio data"
+        assert isinstance(language, str) or (isinstance(language, tuple) and len(language) == 3), "``language`` must be a string or 3-tuple of Sphinx data file paths of the form ``(acoustic_parameters, language_model, phoneme_dictionary)``"
+        assert keyword_entries is None or all(isinstance(keyword, (type(""), type(u""))) and 0 <= sensitivity <= 1 for keyword, sensitivity in keyword_entries), "``keyword_entries`` must be ``None`` or a list of pairs of strings and numbers between 0 and 1"
+
+        # import the PocketSphinx speech recognition module
+        try:
+            from pocketsphinx import pocketsphinx, Jsgf, FsgModel
+
+        except ImportError:
+            raise RequestError("missing PocketSphinx module: ensure that PocketSphinx is set up correctly.")
+        except ValueError:
+            raise RequestError("bad PocketSphinx installation; try reinstalling PocketSphinx version 0.0.9 or better.")
+        if not hasattr(pocketsphinx, "Decoder") or not hasattr(pocketsphinx.Decoder, "default_config"):
+            raise RequestError("outdated PocketSphinx installation; ensure you have PocketSphinx version 0.0.9 or better.")
+
+        if isinstance(language, str):  # directory containing language data
+            language_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pocketsphinx-data", language)
+            if not os.path.isdir(language_directory):
+                raise RequestError("missing PocketSphinx language data directory: \"{}\"".format(language_directory))
+            acoustic_parameters_directory = os.path.join(language_directory, "acoustic-model")
+            language_model_file = os.path.join(language_directory, "language-model.lm.bin")
+            phoneme_dictionary_file = os.path.join(language_directory, "pronounciation-dictionary.dict")
+        else:  # 3-tuple of Sphinx data file paths
+            acoustic_parameters_directory, language_model_file, phoneme_dictionary_file = language
+        if not os.path.isdir(acoustic_parameters_directory):
+            raise RequestError("missing PocketSphinx language model parameters directory: \"{}\"".format(acoustic_parameters_directory))
+        if not os.path.isfile(language_model_file):
+            raise RequestError("missing PocketSphinx language model file: \"{}\"".format(language_model_file))
+        if not os.path.isfile(phoneme_dictionary_file):
+            raise RequestError("missing PocketSphinx phoneme dictionary file: \"{}\"".format(phoneme_dictionary_file))
+
+        # create decoder object
+        config = pocketsphinx.Decoder.default_config()
+        config.set_string("-hmm", acoustic_parameters_directory)  # set the path of the hidden Markov model (HMM) parameter files
+        config.set_string("-lm", language_model_file)
+        config.set_string("-dict", phoneme_dictionary_file)
+        config.set_string("-logfn", os.devnull)  # disable logging (logging causes unwanted output in terminal)
+        decoder = pocketsphinx.Decoder(config)
+
+        # obtain audio data
+        raw_data = audio_data.get_raw_data(convert_rate=16000, convert_width=2)  # the included language models require audio to be 16-bit mono 16 kHz in little-endian format
+
+        # obtain recognition results
+        if keyword_entries is not None:  # explicitly specified set of keywords
+            with PortableNamedTemporaryFile("w") as f:
+                # generate a keywords file - Sphinx documentation recommendeds sensitivities between 1e-50 and 1e-5
+                f.writelines("{} /1e{}/\n".format(keyword, 100 * sensitivity - 110) for keyword, sensitivity in keyword_entries)
+                f.flush()
+
+                # perform the speech recognition with the keywords file (this is inside the context manager so the file isn;t deleted until we're done)
+                decoder.set_kws("keywords", f.name)
+                decoder.set_search("keywords")
+                decoder.start_utt()  # begin utterance processing
+                decoder.process_raw(raw_data, False, True)  # process audio data with recognition enabled (no_search = False), as a full utterance (full_utt = True)
+                decoder.end_utt()  # stop utterance processing
+        elif grammar is not None:  # a path to a FSG or JSGF grammar
+            if not os.path.exists(grammar):
+                raise ValueError("Grammar '{0}' does not exist.".format(grammar))
+            grammar_path = os.path.abspath(os.path.dirname(grammar))
+            grammar_name = os.path.splitext(os.path.basename(grammar))[0]
+            fsg_path = "{0}/{1}.fsg".format(grammar_path, grammar_name)
+            if not os.path.exists(fsg_path):  # create FSG grammar if not available
+                jsgf = Jsgf(grammar)
+                rule = jsgf.get_rule("{0}.{0}".format(grammar_name))
+                fsg = jsgf.build_fsg(rule, decoder.get_logmath(), 7.5)
+                fsg.writefile(fsg_path)
+            else:
+                fsg = FsgModel(fsg_path, decoder.get_logmath(), 7.5)
+            decoder.set_fsg(grammar_name, fsg)
+            decoder.set_search(grammar_name)
+            decoder.start_utt()
+            decoder.process_raw(raw_data, False, True)  # process audio data with recognition enabled (no_search = False), as a full utterance (full_utt = True)
+            decoder.end_utt()  # stop utterance processing
+        else:  # no keywords, perform freeform recognition
+            decoder.start_utt()  # begin utterance processing
+            decoder.process_raw(raw_data, False, True)  # process audio data with recognition enabled (no_search = False), as a full utterance (full_utt = True)
+            decoder.end_utt()  # stop utterance processing
+
+        if show_all: return decoder
+
+        # return results
+        hypothesis = decoder.hyp()
+        if hypothesis is not None: return hypothesis.hypstr
+        raise UnknownValueError()  # no transcriptions available
+
+    def recognize_google(self, audio_data, key=None, language="en-US", show_all=False):
+        """
+        Performs speech recognition on ``audio_data`` (an ``AudioData`` instance), using the Google Speech Recognition API.
+        The Google Speech Recognition API key is specified by ``key``. If not specified, it uses a generic key that works out of the box. This should generally be used for personal or testing purposes only, as it **may be revoked by Google at any time**.
+        To obtain your own API key, simply following the steps on the `API Keys <http://www.chromium.org/developers/how-tos/api-keys>`__ page at the Chromium Developers site. In the Google Developers Console, Google Speech Recognition is listed as "Speech API".
+        The recognition language is determined by ``language``, an RFC5646 language tag like ``"en-US"`` (US English) or ``"fr-FR"`` (International French), defaulting to US English. A list of supported language tags can be found in this `StackOverflow answer <http://stackoverflow.com/a/14302134>`__.
+        Returns the most likely transcription if ``show_all`` is false (the default). Otherwise, returns the raw API response as a JSON dictionary.
+        Raises a ``speech_recognition.UnknownValueError`` exception if the speech is unintelligible. Raises a ``speech_recognition.RequestError`` exception if the speech recognition operation failed, if the key isn't valid, or if there is no internet connection.
+        """
+        assert isinstance(audio_data, AudioData), "``audio_data`` must be audio data"
+        assert key is None or isinstance(key, str), "``key`` must be ``None`` or a string"
+        assert isinstance(language, str), "``language`` must be a string"
+
+        flac_data = audio_data.get_flac_data(
+            convert_rate=None if audio_data.sample_rate >= 8000 else 8000,  # audio samples must be at least 8 kHz
+            convert_width=2  # audio samples must be 16-bit
+        )
+        if key is None: key = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+        url = "http://www.google.com/speech-api/v2/recognize?{}".format(urlencode({
+            "client": "chromium",
+            "lang": language,
+            "key": key,
+        }))
+        request = Request(url, data=flac_data,
+                          headers={"Content-Type": "audio/x-flac; rate={}".format(audio_data.sample_rate)})
+
+        # obtain audio transcription results
+        try:
+            response = urlopen(request, timeout=self.operation_timeout)
+        except HTTPError as e:
+            raise RequestError("recognition request failed: {}".format(e.reason))
+        except URLError as e:
+            raise RequestError("recognition connection failed: {}".format(e.reason))
+        response_text = response.read().decode("utf-8")
+
+        # ignore any blank blocks
+        actual_result = []
+        for line in response_text.split("\n"):
+            if not line: continue
+            result = json.loads(line)["result"]
+            if len(result) != 0:
+                actual_result = result[0]
+                break
+
+        # return results
+        if show_all: return actual_result
+        if not isinstance(actual_result, dict) or len(
+            actual_result.get("alternative", [])) == 0: raise UnknownValueError()
+
+        if "confidence" in actual_result["alternative"]:
+            # return alternative with highest confidence score
+            best_hypothesis = max(actual_result["alternative"], key=lambda alternative: alternative["confidence"])
+        else:
+            # when there is no confidence available, we arbitrarily choose the first hypothesis.
+            best_hypothesis = actual_result["alternative"][0]
+        if "transcript" not in best_hypothesis: raise UnknownValueError()
+        return best_hypothesis["transcript"]
+

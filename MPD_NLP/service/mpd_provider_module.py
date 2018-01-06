@@ -5,41 +5,7 @@ from music_player.mpd_connection import ControlMPD
 from time import sleep
 color = "green"
 
-gernes = ["rock", "hard rock", "alternative", "electro house", "classic rock", "metal"]
-#songs = [ "heroes", "alone" ]
-#artists = [ "david bowie", "five finger death punch", "alan walker", "metallica", "imagine dragons", "volbeat"]
-
-# not working for now - ConnectionRefusedError: [Errno 111] Connection refused
 mpdcontrol = ControlMPD("192.168.178.37", 6600)
-#mpdcontrol.clear_current_playlist()
-
-def OBSOLETEplayGerneSongArtist(arguments):
-    # determine if this chunks are gernes, artists or songs
-    # for gerne:
-    # should be only chunks with one gerne or <GERNE> + music
-    # if there are some gerne chunks and a artist, rather play the artist.
-    # if something unknown and a known gerne/artist/song is given, ignore the unknown
-    # if there is something unknown like 'very very hard rock' recursiveley remove the first? word and parse each argument
-    response = Response() # errorCode.Success and suggestion = None
-    arg_gernes = []
-    for chunk in arguments:
-        gerne = trimGerne(chunk)
-        if mpdcontrol.is_genre_in_db(gerne) == True:
-            arg_gernes.append(gerne)
-
-    if len(arguments) == 0:
-       playOrResume()
-    elif len(arg_gernes) < len(arguments) and containsSongOrArtist(arguments):
-       print(colored("RESULT: playSongArtist(" + ", ".join(arguments) + ")", color))
-    elif len(arg_gernes) > 0:
-       playGernes(arg_gernes)
-    else:
-        # no gerne song artist found, check for alternate suggestions
-        response.errorCode = ErrorCodeEnum.ParsingError
-        # TODO: suggest a song / gerne / artist depending
-        response.suggestion = gernes[randint(0, len(gernes)-1)]
-
-    return response
 
 
 def trimGerne(gerne):
@@ -63,11 +29,17 @@ def playSongOrArtist(arguments):
         print(mpdcontrol.get_current_song_playlist())
         sleep(10)
 
-
 def isGerne(gerne):
-    if trimGerne(gerne).lower() in gernes:
-        return True;
-    return False;
+    gerne = trimGerne(gerne).lower()
+    if mpdcontrol.is_genre_in_db(gerne):
+        return True
+    else:
+        return False
+
+def getRandomGenre():
+    print("getRandomGenre")
+    gernes = ["rock", "hard rock", "alternative", "electro house"]
+    return gernes[randint(0, len(gernes)-1)]
 
 # gernes is a list of gernes f. e. ['rock', 'electro house'] or ['rock']
 def playGernes(gernes):
@@ -77,14 +49,6 @@ def playGernes(gernes):
         mpdcontrol.play(song_pos)
         print(mpdcontrol.get_current_song_playlist())
         sleep(10)
-
-def isArtist(argument):
-    print(argument)
-    return argument.lower() in artists
-
-def isSong(argument):
-    print(argument)
-    return argument.lower() in songs
 
 def stop():
     print(colored("RESULT: stop()", color))
@@ -110,3 +74,29 @@ def playRandom():
 def playNext():
     print(colored("RESULT: playNext()", color))
     mpdcontrol.next()
+
+def playPrevious():
+    print(colored("RESULT: playPrevious()", color))
+    mpdcontrol.previous()
+
+def clearCurrentPlaylist():
+    print(colored("RESULT: clearCurrentPlaylist()", color))
+    mpdcontrol.clear_current_playlist()
+
+def repeatPlaylist():
+    print(colored("RESULT: repeatPlaylist()", color))
+    mpdcontrol.set_repeat()
+
+def repeatSong():
+    print(colored("RESULT: repeatSong()", color))
+
+def updateDatabase():
+    print(colored("RESULT: updateDatabase()", color))
+    mpdcontrol.update_database()
+
+def speak(message):
+    ## BING_KEY not known
+    # tts = TextToSpeech(bing_key=BING_KEY, language='united_states', gender='Female')
+    # resp = tts.request_to_bing(text=message)
+    # tts.play_request(resp)
+    print(colored("SPOKEN_Output: '" + message + "'", "red"))

@@ -59,6 +59,7 @@ def parse(input, userid):
                     else:
                         # input is something like: Don't play David Bowie.
                         response = verbalizer.getDontPlayText()
+                        mpm.speak(response)
                     break
                 elif token.lemma_ == "stop":
                     print("STOP instruction found")
@@ -67,6 +68,7 @@ def parse(input, userid):
                     else:
                         # input is something like: Don't stop.
                         response = verbalizer.getDontStopPauseText()
+                        mpm.speak(response)
                     break
                 elif token.lemma_ == "pause":
                     print("PAUSE instruction found")
@@ -75,6 +77,7 @@ def parse(input, userid):
                     else:
                         # input is something like: Don't pause.
                         response = verbalizer.getDontStopPauseText()
+                        mpm.speak(response)
                     break
                 elif token.lemma_ == "resume" or token.lemma_ == "continue":
                     print("RESUME instruction found")
@@ -83,10 +86,33 @@ def parse(input, userid):
                     else:
                         # input is something like: Don't resume.
                         response = verbalizer.getDontResumeText()
+                        mpm.speak(response)
                     break
                 elif token.lemma_ == "next" and len(doc) <= 2:
                     print("NEXT instruction found")
                     response = playNext()
+                    break
+                elif token.lemma_ == "previous" and len(doc) <= 2:
+                    print("PREVIOUS instruction found")
+                    response = playPrevious()
+                    break
+                elif token.lemma_ == "clear":
+                    print("CLEAR instruction found")
+                    if is_negative(token) != True and 'playlist' in (str(word).lower() for word in doc):
+                        response = clearCurrentPlaylist()
+                    break
+                elif token.lemma_ == "update":
+                    print("UPDATE instruction found")
+                    if is_negative(token) != True and 'database' in (str(word).lower() for word in doc):
+                        response = updateDatabase()
+                    break
+                elif token.lemma_ == "repeat":
+                    print("REPEAT instruction found")
+                    if is_negative(token) != True:
+                        if 'playlist' in (str(word).lower() for word in doc):
+                            response = repeatPlaylist()
+                        elif 'song' in (str(word).lower() for word in doc):
+                            response = repeatSong()
                     break
 
         elif states.get(userid).state == ConversationStateEnum.AwaitYesOrNo:
@@ -96,15 +122,19 @@ def parse(input, userid):
                 response = parse(state.suggestion, userid) # simply call with a suggestion like 'Play rock.'
             else:
                 response = "Oh, ok."
+
+            mpm.speak(response)
         elif states.get(userid).state == ConversationStateEnum.AwaitSongArtistOrGerne:
             print("Song, Gerne or Artist")
             states.pop(userid) # remove state
             return parse("Play " + str(doc), userid)
     except Exception as e: # specify Exception
         response = verbalizer.getConnectionError()
+        mpm.speak(response)
         raise e
-    print(response)
+
     return ">>" + response + "\n"
+
 
 def is_negative(token):
     # if there is a negation for play, it is a children of play in the graph
@@ -114,6 +144,7 @@ def is_negative(token):
             print("NEG found")
             return True
     return False
+
 
 def play(doc, userid):
     chunks = list(doc.noun_chunks)
@@ -128,7 +159,6 @@ def play(doc, userid):
 
     response = verbalizer.getOkText()
 
-
     arg_gernes = []
     for chunk in arguments:
         gerne = mpm.trimGerne(chunk)
@@ -138,39 +168,79 @@ def play(doc, userid):
     print(arg_gernes)
 
     if len(arguments) == 0:
+        mpm.speak(response)
         mpm.playOrResume()
     elif len(arg_gernes) < len(arguments) and mpm.containsSongOrArtist(arguments):
+        mpm.speak(response)
         mpm.playSongOrArtist(arguments)
     elif len(arg_gernes) > 0:
+        mpm.speak(response)
         mpm.playGernes(arg_gernes)
     else:
         # no gerne song artist found, check for alternate suggestions
         # TODO: suggest a song / gerne / artist depending
-        suggestion = mpm.gernes[randint(0, len(mpm.gernes)-1)]
+        suggestion = mpm.getRandomGenre()
         states[userid] = ConversationState(ConversationStateEnum.AwaitYesOrNo, "Play " + suggestion + ".")
         response = verbalizer.getAlternatePlaySuggestion(suggestion)
     return response
 
 def stop():
-    mpm.stop() # TODO: check response
-    return verbalizer.getOkText()
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.stop()  # TODO: check response
+    return response
 
 def pause():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
     mpm.pause() # TODO: check response
-    return verbalizer.getOkText()
+    return response
 
 def resume():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
     mpm.resume() # TODO: check response
-    return verbalizer.getOkText()
+    return response
 
 def playNext():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
     mpm.playNext() # TODO: check response
-    return verbalizer.getOkText()
+    return response
+
+def playPrevious():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.playPrevious() # TODO: check response
+    return response
 
 def playRandom():
     mpm.playRandom() # TODO: check response
     return verbalizer.getOkText()
 
+def clearCurrentPlaylist():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.clearCurrentPlaylist() # TODO: check response
+    return response
+
+def updateDatabase():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.updateDatabase() # TODO: check response
+    return response
+
+def repeatSong():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.repeatSong() # TODO: check response
+    return response
+
+def repeatPlaylist():
+    response = verbalizer.getOkText()
+    mpm.speak(response)
+    mpm.repeatPlaylist() # TODO: check response
+    return response
 
 if __name__ == '__main__':
     #resp = parse("play Alan Walker", 1)

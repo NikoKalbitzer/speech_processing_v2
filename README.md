@@ -20,13 +20,13 @@ A repository to control the mpd server with speech:
 2. settings are described here https://wiki.ubuntuusers.de/MPD/Server/
 
 #### Windows
-1. Download the latest mpd.exe here http://www.musicpd.org/download/win32/
+1. Download the latest mpd.exe from http://www.musicpd.org/download/win32/
 2. Create a folder mpd in C:/, e.g. C:/mpd
 3. Insert the mpd.exe in C:/mpd
-4. Create a empty mpd.db file in C:/mpd, e.g. mpd.db
-5. Create a empty mpd.log file in C:/mpd, e.g. mpd.log
-6. Create a folder music, where all music files placed in
-7. Create a folder playlists, where all playlist files placed in
+4. Create an empty mpd.db file in C:/mpd, e.g. mpd.db
+5. Create an empty mpd.log file in C:/mpd, e.g. mpd.log
+6. Create a folder music C:/mpd/music, where all music files placed in
+7. Create a folder playlists C:/mpd/playlists, where all playlist files placed in
 8. Create a mpd.conf file in C:/mpd with the following content
 <pre><code>
 music_directory "C:/mpd/music"
@@ -47,6 +47,14 @@ audio_output {
     bitrate "128" # do not define if quality is defined
     format "44100:16:1"
 }
+</pre></code>
+9. Open the terminal and go to the folder C:/mpd
+<pre><code>
+> cd C:/mpd
+</pre></code>
+10. Insert following command
+<pre><code>
+> mpd mpd.conf
 </pre></code>
 ## Project Layout
 <pre><code>

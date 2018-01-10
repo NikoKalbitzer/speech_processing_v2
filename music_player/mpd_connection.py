@@ -324,7 +324,7 @@ class ControlMPD:
         if len(resp_artist) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=artist, s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=artist, search_type="Artist", s_pos=False)
             if db_response is None:
                 return False
             else:
@@ -345,7 +345,7 @@ class ControlMPD:
         if len(resp_title) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=title, s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=title, search_type="title", s_pos=False)
             if db_response is None:
                 return False
             else:
@@ -366,7 +366,7 @@ class ControlMPD:
         if len(resp_genre) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=genre, s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=genre, search_type="genre", s_pos=False)
             if db_response is None:
                 return False
             else:

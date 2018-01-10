@@ -232,6 +232,18 @@ class ControlMPD:
 
 # QUERYING USEFUL INFORMATION
 
+    def is_playing(self):
+        """
+        displays the song info of the current song
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        states = self.get_player_status()
+        player_state = states.get('state')
+
+        return player_state == 'play'
+
     def get_current_song(self):
         """
         displays the song info of the current song
@@ -517,5 +529,3 @@ if __name__ == "__main__":
     mpdclient.play()
     sleep(10)
     mpdclient.stop()
-
-

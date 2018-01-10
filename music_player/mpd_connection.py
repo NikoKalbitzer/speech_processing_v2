@@ -513,14 +513,9 @@ class ControlMPD:
 if __name__ == "__main__":
 
     mpdclient = ControlMPD("192.168.178.37", 6600)
-    #print(mpdclient.get_all_artists_in_db())
-    print(mpdclient.get_current_song_playlist())
-    print(mpdclient.is_artist_in_db("e"))
-    print(mpdclient.get_current_song_playlist())
-    #mpdclient.stop()
-    #mpdclient.clear_current_playlist()
-    #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
-    #mpdclient.update_database()
-    #print(mpdclient.get_all_genres_in_db())
-    #print(mpdclient.get_all_artists_in_db())
+    #mpdclient = ControlMPD("localhost", 6600)
+    mpdclient.play()
+    sleep(10)
+    mpdclient.stop()
+
 

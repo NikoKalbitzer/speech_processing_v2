@@ -1,6 +1,6 @@
 import http.client, urllib.parse
 from xml.etree import ElementTree
-from ..resources.supported_languages import TTSLanguageCommand
+from resources.supported_languages import TTSLanguageCommand
 import pyaudio
 
 

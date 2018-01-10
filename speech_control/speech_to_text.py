@@ -99,8 +99,10 @@ class SpeechToText:
 
         if recognizer is 'listen':
             with Microphone() as source:
+                self.recognizer.adjust_for_ambient_noise(source, duration=1)
+                print("Set minimum energy threshold to {}".format(self.recognizer.energy_threshold))
                 print("Please say something: ...")
-                audio = self.recognizer.listen(source)
+                audio = self.recognizer.listen(source, phrase_time_limit=2.5)
 
         elif recognizer is 'recorder':
             if duration is None:

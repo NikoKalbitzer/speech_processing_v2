@@ -6,8 +6,8 @@ from time import sleep
 from speech_control.text_to_speech import TextToSpeech
 color = "green"
 
-mpdcontrol = ControlMPD("192.168.178.37", 6600)
-#mpdcontrol = ControlMPD("localhost", 6600)
+#mpdcontrol = ControlMPD("192.168.178.37", 6600)
+mpdcontrol = ControlMPD("localhost", 6600)
 
 def trimGerne(gerne):
     # cut ' music' in the end

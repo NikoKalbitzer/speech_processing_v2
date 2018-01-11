@@ -558,11 +558,17 @@ class Recognizer(AudioSource):
     def recognize_google(self, audio_data, key=None, language="en-US", show_all=False):
         """
         Performs speech recognition on ``audio_data`` (an ``AudioData`` instance), using the Google Speech Recognition API.
-        The Google Speech Recognition API key is specified by ``key``. If not specified, it uses a generic key that works out of the box. This should generally be used for personal or testing purposes only, as it **may be revoked by Google at any time**.
-        To obtain your own API key, simply following the steps on the `API Keys <http://www.chromium.org/developers/how-tos/api-keys>`__ page at the Chromium Developers site. In the Google Developers Console, Google Speech Recognition is listed as "Speech API".
-        The recognition language is determined by ``language``, an RFC5646 language tag like ``"en-US"`` (US English) or ``"fr-FR"`` (International French), defaulting to US English. A list of supported language tags can be found in this `StackOverflow answer <http://stackoverflow.com/a/14302134>`__.
-        Returns the most likely transcription if ``show_all`` is false (the default). Otherwise, returns the raw API response as a JSON dictionary.
-        Raises a ``speech_recognition.UnknownValueError`` exception if the speech is unintelligible. Raises a ``speech_recognition.RequestError`` exception if the speech recognition operation failed, if the key isn't valid, or if there is no internet connection.
+        The Google Speech Recognition API key is specified by ``key``. If not specified, it uses a generic key that
+        works out of the box. This should generally be used for personal or testing purposes only, as it **may be
+        revoked by Google at any time**. To obtain your own API key, simply following the steps on the `API Keys
+        <http://www.chromium.org/developers/how-tos/api-keys>`__ page at the Chromium Developers site. In the Google
+        Developers Console, Google Speech Recognition is listed as "Speech API". The recognition language is determined
+        by ``language``, an RFC5646 language tag like ``"en-US"`` (US English) or ``"fr-FR"`` (International French),
+        defaulting to US English. A list of supported language tags can be found in this `StackOverflow answer
+        <http://stackoverflow.com/a/14302134>`__Returns the most likely transcription if ``show_all`` is false
+        (the default). Otherwise, returns the raw API response as a JSON dictionary. Raises a ``speech_recognition.
+        UnknownValueError`` exception if the speech is unintelligible. Raises a ``speech_recognition.RequestError``
+        exception if the speech recognition operation failed, if the key isn't valid, or if there is no internet connection.
         """
         assert isinstance(audio_data, AudioData), "``audio_data`` must be audio data"
         assert key is None or isinstance(key, str), "``key`` must be ``None`` or a string"
@@ -584,12 +590,13 @@ class Recognizer(AudioSource):
         # obtain audio transcription results
         try:
             response = urlopen(request, timeout=self.operation_timeout)
+
         except HTTPError as e:
             raise RequestError("recognition request failed: {}".format(e.reason))
         except URLError as e:
             raise RequestError("recognition connection failed: {}".format(e.reason))
         response_text = response.read().decode("utf-8")
-
+        print(response_text)
         # ignore any blank blocks
         actual_result = []
         for line in response_text.split("\n"):

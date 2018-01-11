@@ -46,6 +46,8 @@ def parse(input, userid):
                     if is_negative(token) != True:
                         if token.nbor().lemma_ == "next":
                             response = playNext()
+                        elif token.nbor().lemma_ == "previous":
+                            response = playPrevious()
                         elif token.nbor().lemma_ == "random":
                             response = playRandom()
                         elif token.nbor().lemma_ == "a" and token.nbor().nbor().lemma_ == "random":
@@ -88,11 +90,11 @@ def parse(input, userid):
                         response = verbalizer.getDontResumeText()
                         mpm.speak(response)
                     break
-                elif token.lemma_ == "next" and len(doc) <= 2:
+                elif token.lemma_ == "next" and len(doc) <= 3:
                     print("NEXT instruction found")
                     response = playNext()
                     break
-                elif token.lemma_ == "previous" and len(doc) <= 2:
+                elif token.lemma_ == "previous" and len(doc) <= 3:
                     print("PREVIOUS instruction found")
                     response = playPrevious()
                     break

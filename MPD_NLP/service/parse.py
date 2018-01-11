@@ -8,8 +8,8 @@ from MPD_NLP.service.conversationState import ConversationStateEnum, Conversatio
 from flask import Flask, request
 app = Flask(__name__)
 
-nlp = spacy.load("en_core_web_lg")
-#nlp = spacy.load("en")
+#nlp = spacy.load("en_core_web_lg")
+nlp = spacy.load("en")
 
 # conversation state is stored in a expiringdict
 # note that there an additional state which is also the initial state which is considered if no state is stored

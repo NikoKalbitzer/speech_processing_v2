@@ -512,7 +512,8 @@ class ControlMPD:
 
 if __name__ == "__main__":
 
-    mpdclient = ControlMPD("192.168.178.37", 6600)
+    #mpdclient = ControlMPD("192.168.178.37", 6600)
+    mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
     print(mpdclient.get_current_song_playlist())
     print(mpdclient.is_artist_in_db("e"))

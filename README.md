@@ -7,13 +7,16 @@ A repository to control the mpd server with speech:
 - Audio files
 - Natural Language Processing
 - Speech control of the MPD
+## Usage
 
 ## Dependencies
 - PyAudio (pip3 install pyaudio, apt-get install portaudio19-dev)
 - python-mpd2 (pip3 install python-mpd2)
 - monotonic (pip3 install monotonic)
 - spacy (pip3 install spacy)
+   - download model for spacy: python3 -m spacy download en_core_web_lg
 - expiringdict (pip3 install expiringdict)
+
 ## Setting up the MPD Server
 #### Linux
 1. sudo apt-get install mpd
@@ -56,6 +59,11 @@ audio_output {
 <pre><code>
 > mpd mpd.conf
 </pre></code>
+
+## Add Metadata to songs
+
+Download MusicBrainz Picard from https://picard.musicbrainz.org/ and follow the instructions
+
 ## Project Layout
 <pre><code>
 /audio

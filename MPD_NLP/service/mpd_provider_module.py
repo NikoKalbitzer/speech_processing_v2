@@ -3,7 +3,6 @@ from MPD_NLP.service.response import Response, ErrorCodeEnum
 from random import randint
 from music_player.mpd_connection import ControlMPD
 from time import sleep
-from speech_control.text_to_speech import TextToSpeech
 color = "green"
 
 #mpdcontrol = ControlMPD("192.168.178.37", 6600)
@@ -97,7 +96,7 @@ def updateDatabase():
 
 def speak(message):
     ## BING_KEY not known
-    #tts = TextToSpeech(bing_key="", language='united_states', gender='Female')
-    #resp = tts.request_to_bing(text=message)
-    #tts.play_request(resp)
+    # tts = TextToSpeech(bing_key=BING_KEY, language='united_states', gender='Female')
+    # resp = tts.request_to_bing(text=message)
+    # tts.play_request(resp)
     print(colored("SPOKEN_Output: '" + message + "'", "red"))

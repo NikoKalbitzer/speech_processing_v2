@@ -324,7 +324,7 @@ class ControlMPD:
         if len(resp_artist) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=artist, search_type="Artist", s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=artist, s_pos=False)
             if db_response is None:
                 return False
             else:
@@ -345,7 +345,7 @@ class ControlMPD:
         if len(resp_title) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=title, search_type="title", s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=title, s_pos=False)
             if db_response is None:
                 return False
             else:
@@ -366,7 +366,7 @@ class ControlMPD:
         if len(resp_genre) > 0:
             return True
         else:
-            db_response = self.advanced_search_in_db(search_str=genre, search_type="genre", s_pos=False)
+            db_response = self.advanced_search_in_db(search_str=genre, s_pos=False)
             if db_response is None:
                 return False
             else:
@@ -512,10 +512,16 @@ class ControlMPD:
 
 if __name__ == "__main__":
 
-    mpdclient = ControlMPD("192.168.178.37", 6600)
-    #mpdclient = ControlMPD("localhost", 6600)
-    mpdclient.play()
-    sleep(10)
-    mpdclient.stop()
-
+    #mpdclient = ControlMPD("192.168.178.37", 6600)
+    mpdclient = ControlMPD("localhost", 6600)
+    #print(mpdclient.get_all_artists_in_db())
+    print(mpdclient.get_current_song_playlist())
+    print(mpdclient.is_artist_in_db("e"))
+    print(mpdclient.get_current_song_playlist())
+    #mpdclient.stop()
+    #mpdclient.clear_current_playlist()
+    #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
+    #mpdclient.update_database()
+    #print(mpdclient.get_all_genres_in_db())
+    #print(mpdclient.get_all_artists_in_db())
 

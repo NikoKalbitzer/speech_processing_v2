@@ -19,7 +19,11 @@ if __name__ == '__main__':
         if 'DisplayText' in stt_resp:
             print(stt_resp['DisplayText'])
             #send stt response to parse_server
-            requests.post(url=url_server, data=stt_resp['DisplayText'])
+            params = [
+            ("input", stt_resp['DisplayText']),
+            ("userid", 1)
+            ]
+            requests.post(url=url_server, params=params)
         else:
             print("Did not understand, please retry")
 

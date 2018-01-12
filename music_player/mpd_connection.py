@@ -509,7 +509,12 @@ class ControlMPD:
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
         else:
-            self.client.previous()
+            states = self.get_player_status()
+            player_state = states.get('state')
+            if player_state == 'play' or player_state == 'pause':
+                self.client.previous()
+            else:
+                print("not playing")
 
 
 if __name__ == "__main__":

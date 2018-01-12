@@ -22,12 +22,13 @@ print("READY for requests")
 
 @app.route("/", methods=['POST'])
 def parseREST():
-    bytes_obj = request.get_data()
-    resp_string = bytes_obj.decode('utf-8')
     #input = request.args.get('input')
     #userid = request.args.get('userid')
+    bytes_obj = request.get_data()
+    resp_string = bytes_obj.decode('utf-8')
+    print(resp_string)
     #print("REQUEST from id " + userid + ": " + input)
-    userid = 1
+    userid= 1
     return parse(resp_string, userid)
 
 
@@ -46,16 +47,17 @@ def parse(input, userid):
                     if is_negative(token) != True:
                         if token.nbor().lemma_ == "next":
                             response = playNext()
-                        elif token.nbor().lemma_ == "previous":
+                        elif len(doc) > 1 and token.nbor().lemma_ == "previous":
                             response = playPrevious()
-                        elif token.nbor().lemma_ == "random":
+                        elif len(doc) > 1 and token.nbor().lemma_ == "random":
                             response = playRandom()
-                        elif token.nbor().lemma_ == "a" and token.nbor().nbor().lemma_ == "random":
+                        elif len(doc) > 2 and token.nbor().lemma_ == "a" and token.nbor().nbor().lemma_ == "random":
                             response = playRandom()
-                        elif token.nbor().lemma_ == "something":
+                        elif len(doc) > 1 and token.nbor().lemma_ == "something":
                             # ask for a artist/songname or gerne
                             states[userid] = ConversationState(ConversationStateEnum.AwaitSongArtistOrGerne)
-                            return verbalizer.getQuestionForArtistSongGerneOrRandom()
+                            response = verbalizer.getQuestionForArtistSongGerneOrRandom()
+                            mpm.speak(response)
                         else:
                             response = play(doc, userid)
                     else:

@@ -506,6 +506,7 @@ function webSocketConnect() {
         }
         socket.onclose = function(){
             console.log("disconnected");
+
             $('.top-right').notify({
                 message:{text:"Connection to ympd lost, retrying in 3 seconds "},
                 type: "danger", 

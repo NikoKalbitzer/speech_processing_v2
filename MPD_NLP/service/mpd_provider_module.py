@@ -38,6 +38,8 @@ def isGerne(gerne):
 
 def getRandomGenre():
     print("getRandomGenre")
+    #genres = mpdcontrol.get_all_genres_in_db()
+
     gernes = ["rock", "hard rock", "alternative", "electro house"]
     return gernes[randint(0, len(gernes)-1)]
 

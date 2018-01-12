@@ -197,7 +197,7 @@ class ControlMPD:
         search_type can be any, Artist, Title, Genre..
 
         :param search_str: string to search in database
-        :param search_type: string, "any", "Artist", "Title", "Genre" ..
+        :param search_type: string, "Any", "Artist", "Title", "Genre" ..
         :param s_pos: boolean, if True, it will be returned song_pos and db_response
                                if False, it will be returned only db_response
         :return: None, if no match were found
@@ -208,7 +208,8 @@ class ControlMPD:
 
         if isinstance(search_str, str):
             if search_type is None:
-                db_response = self.client.search("any", search_str)
+                db_response = self.client.search("Any", search_str)
+                print(db_response)
             else:
                 if isinstance(search_type, str):
                     db_response = self.client.search(search_type, search_str)
@@ -221,6 +222,7 @@ class ControlMPD:
             else:
                 song_pos = self.get_current_songpos()
                 for resp in db_response:
+                    print(resp.get('file'))
                     self.client.add(resp.get('file'))
                 if song_pos is None:
                     song_pos = 0
@@ -515,13 +517,10 @@ if __name__ == "__main__":
     #mpdclient = ControlMPD("192.168.178.37", 6600)
     mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
+    #mpdclient.add_artist_to_pl("lonesome rider")
+    print(mpdclient.advanced_search_in_db(search_str="thunder"))
     print(mpdclient.get_current_song_playlist())
-    print(mpdclient.is_artist_in_db("e"))
-    print(mpdclient.get_current_song_playlist())
+
     #mpdclient.stop()
-    #mpdclient.clear_current_playlist()
-    #print(mpdclient.add_genre_to_pl("Dance", new_playlist=True))
-    #mpdclient.update_database()
-    #print(mpdclient.get_all_genres_in_db())
-    #print(mpdclient.get_all_artists_in_db())
+
 

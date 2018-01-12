@@ -11,7 +11,7 @@ if __name__ == '__main__':
             json_data = json.load(json_file)
 
         BING_KEY = json_data.get('Bing_Key')
-        url_server="http://127.0.0.1:5000"
+        url_server = "http://127.0.0.1:5000"
 
         stt = SpeechToText(bing_key=BING_KEY, mode='interactive', language='united_states')
         stt_resp = stt.start_recognize(recognizer='listen')
@@ -19,11 +19,8 @@ if __name__ == '__main__':
         if 'DisplayText' in stt_resp:
             print(stt_resp['DisplayText'])
             #send stt response to parse_server
-            params = [
-            ("input", stt_resp['DisplayText']),
-            ("userid", 1)
-            ]
-            requests.post(url=url_server, params=params)
+            requests.post(url=url_server, data=stt_resp['DisplayText'])
+
         else:
             print("Did not understand, please retry")
 

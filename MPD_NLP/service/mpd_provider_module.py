@@ -25,9 +25,10 @@ def playSongOrArtist(arguments):
     print(colored("RESULT: playSongOrArtist(" + ", ".join(arguments) + ")", color))
     for i in arguments:
         song_pos = mpdcontrol.add_artist_to_pl(i)
-        mpdcontrol.play(song_pos)
-        print(mpdcontrol.get_current_song_playlist())
-        sleep(10)
+        if song_pos is not None:
+            mpdcontrol.play(song_pos)
+            print(mpdcontrol.get_current_song_playlist())
+            sleep(10)
 
 def isGerne(gerne):
     gerne = trimGerne(gerne).lower()

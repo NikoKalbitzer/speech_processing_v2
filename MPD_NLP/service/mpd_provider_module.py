@@ -5,8 +5,8 @@ from music_player.mpd_connection import ControlMPD
 from time import sleep
 color = "green"
 
-#mpdcontrol = ControlMPD("192.168.178.37", 6600)
-mpdcontrol = ControlMPD("localhost", 6600)
+mpdcontrol = ControlMPD("192.168.178.37", 6600)
+#mpdcontrol = ControlMPD("localhost", 6600)
 
 def trimGerne(gerne):
     # cut ' music' in the end

@@ -322,7 +322,6 @@ class ControlMPD:
                  False, if artist is not available
         """
         resp_artist = self.client.find("Artist", artist)
-        print(resp_artist)
         if len(resp_artist) > 0:
             return True
         else:

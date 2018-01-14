@@ -6,6 +6,7 @@ from random import randint
 from MPD_NLP.service.conversationState import ConversationStateEnum, ConversationState
 #from MPD_NLP.service.response import Response, ErrorCodeEnum
 import logging as log
+import string
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -92,7 +93,7 @@ def parse(input, userid):
                         mpm.speak(response)
                     break
                 elif token.lemma_ == "resume" or token.lemma_ == "continue":
-                    print("RESUME instruction found")
+                    log.info("RESUME instruction found")
                     if is_negative(token) != True:
                         response = resume()
                     else:
@@ -174,6 +175,19 @@ def play(doc, userid):
     arguments = []
     for chunk in chunks:
         arguments.append(str(chunk))
+
+    # in some cases chunk analysis takes play within the chunk
+    if len(arguments) > 0 and arguments[0].lower().startswith("play") and doc.text.lower().count("play") == arguments[0].lower().count("play"):
+        arguments[0] = arguments[0][5:]
+        if "" in arguments:
+            arguments.remove("")
+
+    # if chunk analysis fails, set chunk manually (this happens in short instructions)
+    if len(arguments) == 0:
+        table = str.maketrans({key: None for key in string.punctuation})
+        arguments.append(doc.text[5:].translate(table))
+        if "" in arguments:
+            arguments.remove("")
 
     response = verbalizer.getOkText()
 

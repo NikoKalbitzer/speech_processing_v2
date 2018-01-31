@@ -233,6 +233,17 @@ class ControlMPD:
             raise TypeError("'search_str' must be Type of String")
 
 # QUERYING USEFUL INFORMATION
+    def is_playing(self):
+        """
+        displays the song info of the current song
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        states = self.get_player_status()
+        player_state = states.get('state')
+
+        return player_state == 'play'
 
     def get_current_song(self):
         """
@@ -499,7 +510,12 @@ class ControlMPD:
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
         else:
-            self.client.next()
+            states = self.get_player_status()
+            player_state = states.get('state')
+            if player_state == 'play' or player_state == 'pause':
+                self.client.next()
+            else:
+                print("not playing")
 
     def previous(self):
         """
@@ -526,5 +542,3 @@ if __name__ == "__main__":
     print(mpdclient.get_current_song_playlist())
 
     #mpdclient.stop()
-
-

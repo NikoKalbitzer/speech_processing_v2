@@ -7,7 +7,18 @@ A repository to control the mpd server with speech:
 - Audio files
 - Natural Language Processing
 - Speech control of the MPD
+
 ## Usage
+In Terminal:
+<pre><code>
+export FLASK_APP=/path_to/parse.py
+flask run
+</pre></code>
+then:
+<pre><code>
+python3 main.py
+</pre></code>
+or using the ympd webclient
 
 ## Dependencies
 - PyAudio (pip3 install pyaudio, apt-get install portaudio19-dev)

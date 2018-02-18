@@ -1,6 +1,9 @@
 # Speech processing
 Forked from https://github.com/Uberi/speech_recognition
 
+<br>
+Project @ Ostbayerische Technische Hochschule Regensburg in WS 17/18<br>
+
 A repository to control the mpd server with speech:
 - Speech to Text
 - Text to Speech

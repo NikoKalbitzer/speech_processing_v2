@@ -1,0 +1,13 @@
+{
+  "speech_engine": "google",
+  "mpd": {
+    "server": "localhost",
+    "port": 6600
+  },
+  "flask": {
+    "server": "http://127.0.0.1:5000"
+  },
+  "bing": {
+    "bing_key": ""
+  }
+}

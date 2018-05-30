@@ -2,7 +2,6 @@ from termcolor import colored
 from nlp.service.response import Response, ErrorCodeEnum
 from random import randint
 from music_player.mpd_connection import ControlMPD
-from music_player.load_mpd import LoadMPD
 from time import sleep
 from definitions import ROOT_DIR
 import json
@@ -10,9 +9,11 @@ color = "green"
 
 with open(ROOT_DIR + '/configs/configuration.json') as json_file:
     json_data = json.load(json_file)
-
-mpdcontrol = ControlMPD(json_data['mpd']['server'], json_data['mpd']['port'])
-
+try:
+    mpdcontrol = ControlMPD(json_data['mpd']['server'], json_data['mpd']['port'])
+except ConnectionRefusedError:
+    print(colored("ConnectionRefusedError: check if your MPD server is running!", "red"))
+    exit(0)
 
 def trimGerne(gerne):
     # cut ' music' in the end

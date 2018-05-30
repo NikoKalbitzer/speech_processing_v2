@@ -1,15 +1,19 @@
 # Speech processing
-Forked from https://github.com/Uberi/speech_recognition
+
+This Repository was created for a project @ [Ostbayerische Technische Hochschule Regensburg](https://www.oth-regensburg.de/) in WS 17/18
 
 <br>
-Project @ Ostbayerische Technische Hochschule Regensburg in WS 17/18<br>
+In the current state it is possible:
 
-A repository to control the mpd server with speech:
-- Speech to Text
-- Text to Speech
-- Audio files
-- Natural Language Processing
-- Speech control of the MPD
+- Speech to text conversion with google´s or microsoft´s speech api
+- Natural language processing with [spacy](https://spacy.io/)
+- Speech control of the [MPD](https://www.musicpd.org/)
+- Speech recognition with audio files
+
+## Prerequisites
+#### Python version
+
+#### File "configuration.json" in folder configs
 
 ## Usage
 In Terminal:
@@ -24,12 +28,32 @@ python3 main.py
 or using the ympd webclient
 
 ## Dependencies
-- PyAudio (pip3 install pyaudio, apt-get install portaudio19-dev)
-- python-mpd2 (pip3 install python-mpd2)
-- monotonic (pip3 install monotonic)
+- PyAudio
+<pre><code>
+sudo apt-get install portaudio19-dev
+
+pip3 install pyaudio
+</pre></code>
+- python-mpd2
+<pre><code>
+pip3 install python-mpd2
+</pre></code>
+- monotonic
+<pre><code>
+pip3 install monotonic
+</pre></code>
 - spacy (pip3 install spacy)
-   - download model for spacy: python3 -m spacy download en_core_web_lg
-- expiringdict (pip3 install expiringdict)
+<pre><code>
+pip3 install spacy
+
+download model for spacy:
+
+python3 -m spacy download en_core_web_lg
+</pre></code>
+- expiringdict
+<pre><code>
+pip3 install expiringdict
+</pre></code>
 
 ## Setting up the MPD Server
 #### Linux
@@ -93,16 +117,16 @@ Download MusicBrainz Picard from https://picard.musicbrainz.org/ and follow the 
 /configs
     configuration.json
 
-/MPD_NLP
+/music_player
+    mpd_connection.py
+
+/nlp
     /service
         conversationState.py
         mpd_provider_module.py
         parse.py
         response.py
         verbalizer.py
-
-/mpd
-    mpd_connection.py
 
 /resources
     supported_languages.py

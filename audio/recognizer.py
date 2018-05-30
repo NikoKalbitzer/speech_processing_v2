@@ -596,7 +596,7 @@ class Recognizer(AudioSource):
         except URLError as e:
             raise RequestError("recognition connection failed: {}".format(e.reason))
         response_text = response.read().decode("utf-8")
-        print(response_text)
+
         # ignore any blank blocks
         actual_result = []
         for line in response_text.split("\n"):

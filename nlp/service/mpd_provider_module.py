@@ -1,5 +1,5 @@
 from termcolor import colored
-from MPD_NLP.service.response import Response, ErrorCodeEnum
+from nlp.service.response import Response, ErrorCodeEnum
 from random import randint
 from music_player.mpd_connection import ControlMPD
 from music_player.load_mpd import LoadMPD

@@ -2,11 +2,17 @@ from termcolor import colored
 from MPD_NLP.service.response import Response, ErrorCodeEnum
 from random import randint
 from music_player.mpd_connection import ControlMPD
+from music_player.load_mpd import LoadMPD
 from time import sleep
+from definitions import ROOT_DIR
+import json
 color = "green"
 
-mpdcontrol = ControlMPD("192.168.178.37", 6600)
-#mpdcontrol = ControlMPD("localhost", 6600)
+with open(ROOT_DIR + '/configs/configuration.json') as json_file:
+    json_data = json.load(json_file)
+
+mpdcontrol = ControlMPD(json_data['mpd']['server'], json_data['mpd']['port'])
+
 
 def trimGerne(gerne):
     # cut ' music' in the end

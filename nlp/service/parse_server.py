@@ -1,10 +1,9 @@
 import spacy
-import MPD_NLP.service.mpd_provider_module as mpm
-from MPD_NLP.service import verbalizer
+import nlp.service.mpd_provider_module as mpm
+from nlp.service import verbalizer
 from expiringdict import ExpiringDict
-from random import randint
-from MPD_NLP.service.conversationState import ConversationStateEnum, ConversationState
-#from MPD_NLP.service.response import Response, ErrorCodeEnum
+from nlp.service.conversationState import ConversationStateEnum, ConversationState
+#from nlp.service.response import Response, ErrorCodeEnum
 import logging as log
 import string
 from flask import Flask, request
@@ -275,6 +274,7 @@ def repeatPlaylist():
     mpm.speak(response)
     mpm.repeatPlaylist() # TODO: check response
     return response
+
 
 if __name__ == '__main__':
     #resp = parse("play Alan Walker", 1)

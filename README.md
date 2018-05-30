@@ -3,7 +3,8 @@
 This Repository was created for a project @ [Ostbayerische Technische Hochschule Regensburg](https://www.oth-regensburg.de/) in WS 17/18
 
 <br>
-In the current state it is possible:
+In the current state, following actions are possible:
+<br>
 
 - Speech to text conversion with google´s or microsoft´s speech api
 - Natural language processing with [spacy](https://spacy.io/)
@@ -11,9 +12,36 @@ In the current state it is possible:
 - Speech recognition with audio files
 
 ## Prerequisites
-#### Python version
+#### Python version 3.5
+Please ensure, that you use python 3.5. Check before you start:
+
+Terminal on windows:
+<pre><code>
+py -3.5
+</pre></code>
+Terminal on Linux:
+<pre><code>
+python3
+</pre></code>
 
 #### File "configuration.json" in folder configs
+If you have other settings for mpd, flask than the default file, please change it to
+your preference
+<pre><code>
+{
+  "speech_engine": "google",
+  "mpd": {
+    "server": "localhost",
+    "port": 6600
+  },
+  "flask": {
+    "server": "http://127.0.0.1:5000"
+  },
+  "bing": {
+    "bing_key": ""
+  }
+}
+</pre></code>
 
 ## Usage
 In Terminal:
@@ -32,27 +60,32 @@ or using the ympd webclient
 <pre><code>
 sudo apt-get install portaudio19-dev
 
-pip3 install pyaudio
+sudo pip3 install pyaudio
 </pre></code>
+- FLASK
+<pre><code>
+sudo pip3 install Flask
+</pre></code>
+
 - python-mpd2
 <pre><code>
-pip3 install python-mpd2
+sudo pip3 install python-mpd2
 </pre></code>
 - monotonic
 <pre><code>
-pip3 install monotonic
+sudo pip3 install monotonic
 </pre></code>
 - spacy (pip3 install spacy)
 <pre><code>
-pip3 install spacy
+sudo pip3 install spacy
 
 download model for spacy:
 
-python3 -m spacy download en_core_web_lg
+sudo python3 -m spacy download en_core_web_lg
 </pre></code>
 - expiringdict
 <pre><code>
-pip3 install expiringdict
+sudo pip3 install expiringdict
 </pre></code>
 
 ## Setting up the MPD Server

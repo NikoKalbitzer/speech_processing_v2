@@ -1,0 +1,6 @@
+pyaudio
+Flask
+python-mpd2
+monotonic
+spacy
+expiringdict

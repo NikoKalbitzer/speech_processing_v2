@@ -1,12 +1,13 @@
 import spacy
+import string
 import nlp.service.mpd_provider_module as mpm
+import logging as log
 from nlp.service import verbalizer
 from expiringdict import ExpiringDict
 from nlp.service.conversationState import ConversationStateEnum, ConversationState
-#from nlp.service.response import Response, ErrorCodeEnum
-import logging as log
-import string
 from flask import Flask, request
+#from nlp.service.response import Response, ErrorCodeEnum
+
 app = Flask(__name__)
 
 nlp = spacy.load("en_core_web_lg")
@@ -277,6 +278,5 @@ def repeatPlaylist():
 
 
 if __name__ == '__main__':
-    #resp = parse("play Alan Walker", 1)
-    #print(resp)
     app.run(debug=True)
+

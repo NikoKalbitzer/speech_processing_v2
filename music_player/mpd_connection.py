@@ -25,12 +25,13 @@ class ControlMPD:
             else:
                 raise TypeError('port must be Type of Int')
 
-        self.client = MPDClient()
-        self.client.connect(host, port)
-
-        self.connected = True
+        self.connected = False
         self.__thread = None
         self.__running = False
+
+        self.client = MPDClient()
+        self.client.connect(host, port)
+        self.connected = True
         self.start()
 
     def __del__(self):
@@ -38,9 +39,10 @@ class ControlMPD:
         Destructor
         """
         self.stop_thread()
-        self.connected = False
-        self.client.close()
-        self.client.disconnect()
+        if self.connected is True:
+            self.client.disconnect()
+            self.client.close()
+            self.connected = False
 
     def stop_thread(self):
         """

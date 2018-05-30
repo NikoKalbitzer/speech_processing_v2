@@ -534,11 +534,7 @@ class ControlMPD:
 
 if __name__ == "__main__":
 
-    #mpdclient = ControlMPD("192.168.178.37", 6600)
     mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
-    #mpdclient.add_artist_to_pl("lonesome rider")
-    print(mpdclient.advanced_search_in_db(search_str="thunder"))
     print(mpdclient.get_current_song_playlist())
 
-    #mpdclient.stop()

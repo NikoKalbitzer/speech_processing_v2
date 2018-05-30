@@ -1,16 +1,16 @@
 import pyaudio
 import wave
+import time
 from os import path
 from audio.audio_file import AudioFile
 from audio.recognizer import Recognizer, UnknownValueError, RequestError
 from audio.microphone import Microphone
 from resources.supported_languages import STTLanguageCommand
-import time
 
 
 class SpeechToText:
 
-    def __init__(self, bing_key, mode=None, language=None):
+    def __init__(self, bing_key=None, mode=None, language=None):
         """
         constructor to initialize bing_key, mode settings and appropiate language
 
@@ -18,11 +18,11 @@ class SpeechToText:
         :param mode: string, select mode: interactive(default), dictation, conversation
         :param language: string, 'germany' is default string value
         """
-
-        if isinstance(bing_key, str):
-            self.bing_key = bing_key
-        else:
-            raise TypeError("'bing_key' must be type of string")
+        if bing_key is not None:
+            if isinstance(bing_key, str):
+                self.bing_key = bing_key
+            else:
+                raise TypeError("'bing_key' must be type of string")
 
         if mode is None:
             self.mode = 'interactive'
@@ -86,7 +86,7 @@ class SpeechToText:
         """
         return self.mode
 
-    def start_recognize(self, recognizer='listen', duration=None, path_to_audio=None):
+    def start_recognize(self, speech_engine="google", recognizer='listen', duration=None, path_to_audio=None):
         """
         method to start the recognizing dependent from the selected 'recognizer'
 
@@ -143,9 +143,9 @@ class SpeechToText:
 
         print("Recording finished!")
 
-        return self.get_result(audio)
+        return self.get_result(audio, speech_engine)
 
-    def get_result(self, audio):
+    def get_result(self, audio, speech_engine):
         """
         method to get the result of the query as a dictionary
 
@@ -156,7 +156,11 @@ class SpeechToText:
         {'DisplayText': 'Wie ist das Wetter heute?', 'Duration': 17700000, 'RecognitionStatus': 'Success', 'Offset': 4300000}
         """
 
-        result = self.recognizer.recognize_bing(audio, key=self.bing_key, language=self.language_abbreviation, show_all=True)
+        if speech_engine == "google":
+            result = self.recognizer.recognize_google(audio, language=self.language_abbreviation)
+        else:
+            result = self.recognizer.recognize_bing(audio, key=self.bing_key, language=self.language_abbreviation, show_all=True)
+
         return result
         """
         if 'DisplayText' in result:

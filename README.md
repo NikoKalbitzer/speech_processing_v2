@@ -52,16 +52,50 @@ to retagging your music database with a software like https://picard.musicbrainz
 Download and follow the instructions!
 
 ## Usage
-In Terminal:
+
+#### Windows
+
+1. Clone this repo:
 <pre><code>
-export FLASK_APP=/path_to/parse.py
-flask run
+git clone https://github.com/bierschi/speech_processing.git
 </pre></code>
-then:
+2. Change into repo
 <pre><code>
-python3 main.py
+git clone https://github.com/bierschi/speech_processing.git
 </pre></code>
-or using the ympd webclient
+3. Install project with setup.py
+<pre><code>
+py -3.5 setup.py install
+</pre></code>
+4. Execute the file `parse_server.py`
+<pre><code>
+py -3.5 parse_server.py
+</pre></code>
+5. Open a new terminal and change into repo again. Execute the file `speech_request_client.py`
+<pre><code>
+py -3.5 speech_request_client.py
+</pre></code>
+#### Linux
+1. Clone this repo:
+<pre><code>
+git clone https://github.com/bierschi/speech_processing.git
+</pre></code>
+2. Change into repo
+<pre><code>
+cd speech_processing/
+</pre></code>
+3. Install project with setup.py
+<pre><code>
+sudo python3 setup.py install
+</pre></code>
+4. Execute the file `parse_server.py`
+<pre><code>
+python3 parse_server.py
+</pre></code>
+5. Open a new terminal and change into repo again. Execute the file `speech_request_client.py`
+<pre><code>
+python3 speech_request_client.py
+</pre></code>
 
 ## Dependencies
 
@@ -95,9 +129,9 @@ sudo pip3 install monotonic
 - spacy
 <pre><code>
 sudo pip3 install spacy
-
+</pre></code>
 download model for spacy:
-
+<pre><code>
 sudo python3 -m spacy download en_core_web_lg
 </pre></code>
 - expiringdict
@@ -165,9 +199,17 @@ audio_output {
     configuration.json
 
 /music_player
+    /radio_playlists
+        *.m3u
+    /songs
+    load_mpd.py
+    mpd.exe
     mpd_connection.py
 
 /nlp
+    /locust
+        __init__.py
+        locustfile.py
     /service
         conversationState.py
         mpd_provider_module.py
@@ -184,8 +226,11 @@ audio_output {
 
 /ympd_webclient
 
+definitions.py
 LICENSE
-main.py
+parse_server.py
 README.md
+requirements.txt
 setup.py
+speech_request_client.py
 </pre></code>

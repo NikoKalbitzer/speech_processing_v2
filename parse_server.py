@@ -198,7 +198,7 @@ def play(doc, userid):
             arg_genres.append(genre)
 
     log.info(arg_genres)
-
+    print(len(arg_genres))
     if len(arguments) == 0:
         mpm.speak(response)
         mpm.playOrResume()

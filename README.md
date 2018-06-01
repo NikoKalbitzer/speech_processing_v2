@@ -148,9 +148,6 @@ audio_output {
 > mpd mpd.conf
 </pre></code>
 
-## Add Metadata to songs
-
-Download MusicBrainz Picard from https://picard.musicbrainz.org/ and follow the instructions
 
 ## Project Layout
 <pre><code>

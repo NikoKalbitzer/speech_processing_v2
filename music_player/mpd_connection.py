@@ -538,5 +538,7 @@ if __name__ == "__main__":
 
     mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
+    print(mpdclient.get_all_genres_in_db())
+    print(mpdclient.is_genre_in_db('rhy/ambient/electronic/jaz'))
     print(mpdclient.get_current_song_playlist())
 

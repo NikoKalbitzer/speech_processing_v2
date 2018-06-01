@@ -60,12 +60,12 @@ class LoadMPD:
         :param base_path, path for creating these files
         """
         log.info("create files for windows machines")
-        if not os.path.exists('songs'):
-            os.makedirs('songs')
+        if not os.path.exists('music_player/songs'):
+            os.makedirs('music_player/songs')
         music_directory = os.path.join(base_path, 'music_player\songs')
         music_directory = '/'.join(music_directory.split('\\'))
-        if not os.path.exists('radio_playlists'):
-            os.makedirs('radio_playlists')
+        if not os.path.exists('music_player/radio_playlists'):
+            os.makedirs('music_player/radio_playlists')
         playlist_directory = os.path.join(base_path, 'music_player\\radio_playlists')
         playlist_directory = '/'.join(playlist_directory.split('\\'))
         mpd_conf_path = os.path.join(base_path, 'music_player\mpd.conf')

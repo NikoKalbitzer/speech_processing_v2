@@ -68,4 +68,11 @@ fabric.properties
 /**/.idea/vcs.xml
 /**/__pycache__/**
 
-
+#Project
+audio/pocketsphinx-data/*
+data/*
+music_player/songs/*
+music_player/radio_playlists/*
+resources/wav_files/*
+ympd_webclient/*
+test/*

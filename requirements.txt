@@ -4,3 +4,4 @@ python-mpd2
 monotonic
 spacy
 expiringdict
+psutil

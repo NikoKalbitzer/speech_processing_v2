@@ -4,7 +4,7 @@ This Repository was created for a project @ [Ostbayerische Technische Hochschule
 
 <br>
 In the current state, following actions are possible:
-<br>
+<br><br>
 
 - Speech to text conversion with google´s or microsoft´s speech api
 - Natural language processing with [spacy](https://spacy.io/)
@@ -43,6 +43,14 @@ your preference
 }
 </pre></code>
 
+#### Full metadata in database
+
+It is **absolutly necessary** to have a complete music database with genre, title
+and artist. Have a look at your music database and ensure that every song
+is tagged with the required informations for good results. Alternative you have
+to retagging your music database with a software like https://picard.musicbrainz.org/.
+Download and follow the instructions!
+
 ## Usage
 In Terminal:
 <pre><code>
@@ -56,6 +64,15 @@ python3 main.py
 or using the ympd webclient
 
 ## Dependencies
+
+If the setup script was not working correctly, install the dependencies with
+the requirements.txt file
+<pre><code>
+pip3 install -r requirements.txt
+</pre></code>
+
+or install manually:
+
 - PyAudio
 <pre><code>
 sudo apt-get install portaudio19-dev

@@ -92,7 +92,7 @@ sudo pip3 install python-mpd2
 <pre><code>
 sudo pip3 install monotonic
 </pre></code>
-- spacy (pip3 install spacy)
+- spacy
 <pre><code>
 sudo pip3 install spacy
 

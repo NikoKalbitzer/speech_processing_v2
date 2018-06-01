@@ -2,10 +2,13 @@ from termcolor import colored
 from nlp.service.response import Response, ErrorCodeEnum
 from random import randint
 from music_player.mpd_connection import ControlMPD
+from music_player.load_mpd import LoadMPD
 from time import sleep
 from definitions import ROOT_DIR
 import json
 color = "green"
+
+LoadMPD()
 
 with open(ROOT_DIR + '/configs/configuration.json') as json_file:
     json_data = json.load(json_file)

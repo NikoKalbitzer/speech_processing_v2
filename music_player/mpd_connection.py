@@ -224,7 +224,7 @@ class ControlMPD:
             else:
                 song_pos = self.get_current_songpos()
                 for resp in db_response:
-                    print(resp.get('file'))
+                    #print(resp.get('file'))
                     self.client.add(resp.get('file'))
                 if song_pos is None:
                     song_pos = 0

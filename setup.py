@@ -14,9 +14,12 @@ class PostInstallCommand(install):
         system, machine = platform.system(), platform.machine()
         if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)
+            call('py -3.5 -m pip install pyaudio')
             call('py -3.5 -m spacy download en_core_web_lg'.split())
         elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)
+            call('sudo apt-get install portaudio19-dev'.split())
+            call('sudo pip3 install pyaudio'.split())
             call('sudo python3 -m spacy download en_core_web_lg'.split())
 
 
@@ -31,8 +34,8 @@ setup(
     packages=["audio", "configs", "music_player", "nlp", "nlp.locust", "nlp.service", "resources", "speech_control"],
     package_data={'audio': ['flac-linux-x86', 'flac-linux-x86_64', 'flac-mac', 'flac-win32.exe'],
                   'configs': ['*.json'], '': ['requirements.txt'], 'music_player': ['mpd.exe', 'radio_playlists/*.m3u']},
-    install_requires=["pyaudio", "monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil"],
-    #cmdclass={
-    #    'install': PostInstallCommand
-    #},
+    install_requires=["monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil"],
+    cmdclass={
+        'install': PostInstallCommand
+    },
 )

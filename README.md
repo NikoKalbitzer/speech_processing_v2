@@ -61,7 +61,7 @@ git clone https://github.com/bierschi/speech_processing.git
 </pre></code>
 2. Change into repo
 <pre><code>
-git clone https://github.com/bierschi/speech_processing.git
+cd speech_processing
 </pre></code>
 3. Install project with setup.py
 <pre><code>
@@ -97,6 +97,7 @@ python3 parse_server.py
 python3 speech_request_client.py
 </pre></code>
 
+## The following points are not needed, if the setup script works normally
 ## Dependencies
 
 If the setup script was not working correctly, install the dependencies with
@@ -138,21 +139,28 @@ sudo python3 -m spacy download en_core_web_lg
 <pre><code>
 sudo pip3 install expiringdict
 </pre></code>
-
+- psutil
+<pre><code>
+sudo pip3 install psutil
+</pre></code>
 ## Setting up the MPD Server
 #### Linux
-1. sudo apt-get install mpd
+1. Install the MPD
+<pre><code>
+sudo apt-get install mpd
+</pre></code>
+
 2. settings are described here https://wiki.ubuntuusers.de/MPD/Server/
 
 #### Windows
-1. Download the latest mpd.exe from http://www.musicpd.org/download/win32/
-2. Create a folder mpd in C:/, e.g. C:/mpd
-3. Insert the mpd.exe in C:/mpd
-4. Create an empty mpd.db file in C:/mpd, e.g. mpd.db
-5. Create an empty mpd.log file in C:/mpd, e.g. mpd.log
-6. Create a folder music C:/mpd/music, where all music files placed in
-7. Create a folder playlists C:/mpd/playlists, where all playlist files placed in
-8. Create a mpd.conf file in C:/mpd with the following content
+1. Download the latest `mpd.exe` from http://www.musicpd.org/download/win32/
+2. Create a folder mpd in C:/, e.g. `C:/mpd`
+3. Insert the `mpd.exe` in `C:/mpd`
+4. Create an empty `mpd.db` file in `C:/mpd`, e.g. `mpd.db`
+5. Create an empty `mpd.log` file in `C:/mpd`, e.g. `mpd.log`
+6. Create a folder music `C:/mpd/music`, where all music files placed in
+7. Create a folder playlists `C:/mpd/playlists`, where all playlist files placed in
+8. Create a `mpd.conf` file in `C:/mpd` with the following content
 <pre><code>
 music_directory "C:/mpd/music"
 log_file "C:/mpd/mpd.log"
@@ -173,7 +181,7 @@ audio_output {
     format "44100:16:1"
 }
 </pre></code>
-9. Open the terminal and go to the folder C:/mpd
+9. Open the terminal and go to the folder `C:/mpd`
 <pre><code>
 > cd C:/mpd
 </pre></code>

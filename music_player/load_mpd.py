@@ -3,9 +3,9 @@ import os
 import subprocess
 import signal
 import psutil
+import re
 import logging as log
 from definitions import ROOT_DIR
-
 
 class LoadMPD:
 
@@ -155,6 +155,7 @@ class LoadMPD:
         if errs is None:
             if b"installed" in outs:
                 log.info("mpd package is installed")
+                self.change_path_mpd()
                 if not self.is_mpd_running_linux():
                     log.info("start mpd service on linux")
                     subprocess.call(["sudo", "service", "mpd", "start"])
@@ -165,6 +166,24 @@ class LoadMPD:
             log.info("error for communicating with the subprocess \"apt list mpd\"")
 
         #self.mpd_pid = subprocess.Popen([mpd_exe_path, mpd_conf_path], creationflags=DETACHED_PROCESS).pid
+
+    def change_path_mpd(self):
+        """
+
+        :return:
+        """
+        new_path = '\"' + ROOT_DIR + '/music_player/songs/' + '\"'
+
+        file_handle = open('/etc/mpd.conf', 'r')
+        mpd_conf_string = file_handle.read()
+        file_handle.close()
+
+        new_mpd_conf_string = (re.sub('\"/var/lib/mpd/music\"', new_path, mpd_conf_string))
+        file_handle = open('/etc/mpd.conf', 'w')
+        file_handle.write(new_mpd_conf_string)
+        file_handle.close()
+        log.info("restart mpd service on linux")
+        subprocess.call(["sudo", "service", "mpd", "restart"])
 
 
 if __name__ == '__main__':

@@ -155,7 +155,7 @@ class LoadMPD:
         if errs is None:
             if b"installed" in outs:
                 log.info("mpd package is installed")
-                self.change_path_mpd()
+                #self.change_path_mpd()
                 if not self.is_mpd_running_linux():
                     log.info("start mpd service on linux")
                     subprocess.call(["sudo", "service", "mpd", "start"])

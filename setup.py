@@ -14,7 +14,8 @@ class PostInstallCommand(install):
         system, machine = platform.system(), platform.machine()
         if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)
-            call('py -3.5 -m pip install pyaudio')
+            call('py -3.5 -m pip install pyaudio'.split())
+            call('py -3.5 -m pip install -r requirements.txt'.split())
             call('py -3.5 -m spacy download en_core_web_lg'.split())
         elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)

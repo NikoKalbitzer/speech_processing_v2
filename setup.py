@@ -20,6 +20,7 @@ class PostInstallCommand(install):
             install.run(self)
             call('sudo apt-get install portaudio19-dev'.split())
             call('sudo pip3 install pyaudio'.split())
+            call('sudo pip3 install -r requirements.txt'.split())
             call('sudo python3 -m spacy download en_core_web_lg'.split())
 
 
@@ -39,3 +40,4 @@ setup(
         'install': PostInstallCommand
     },
 )
+

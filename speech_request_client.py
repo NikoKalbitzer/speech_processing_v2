@@ -1,5 +1,6 @@
 import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import json
 import requests
 from termcolor import colored
@@ -9,8 +10,6 @@ from speech_control.text_to_speech import TextToSpeech
 from audio.recognizer import RequestError, UnknownValueError
 from requests.packages.urllib3.exceptions import NewConnectionError, MaxRetryError
 from requests.exceptions import ConnectionError
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():

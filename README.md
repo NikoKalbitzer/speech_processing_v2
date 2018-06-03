@@ -12,8 +12,8 @@ In the current state, following actions are possible:
 - Speech recognition with audio files
 
 ## Prerequisites
-#### Python version 3.5
-Please ensure, that you use python 3.5. Check before you start:
+#### Python version 3.5 or 3.6
+Please ensure, that you use **python 3.5 or 3.6**. Check before you start:
 
 Terminal on windows:
 <pre><code>
@@ -71,7 +71,7 @@ py -3.5 setup.py install
 <pre><code>
 py -3.5 parse_server.py
 </pre></code>
-5. Open a new terminal and change into repo again. Execute the file `speech_request_client.py`
+5. Open a **new terminal** and change into repo again. Execute the file `speech_request_client.py`
 <pre><code>
 py -3.5 speech_request_client.py
 </pre></code>
@@ -92,7 +92,7 @@ sudo python3 setup.py install
 <pre><code>
 python3 parse_server.py
 </pre></code>
-5. Open a new terminal and change into repo again. Execute the file `speech_request_client.py`
+5. Open a **new terminal** and change into repo again. Execute the file `speech_request_client.py`
 <pre><code>
 python3 speech_request_client.py
 </pre></code>
@@ -101,9 +101,12 @@ python3 speech_request_client.py
 ## Dependencies
 
 If the setup script was not working correctly, install the dependencies with
-the requirements.txt file
+the requirements.txt file, check first if pip3 is installed:
 <pre><code>
-pip3 install -r requirements.txt
+sudo apt-get install python3-pip
+</pre></code>
+<pre><code>
+sudo pip3 install -r requirements.txt
 </pre></code>
 
 or install manually:

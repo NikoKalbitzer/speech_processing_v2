@@ -20,6 +20,7 @@ class PostInstallCommand(install):
         elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)
             call('sudo apt-get install portaudio19-dev'.split())
+            call('sudo apt-get install python3-pip'.split())
             call('sudo pip3 install pyaudio'.split())
             call('sudo pip3 install -r requirements.txt'.split())
             call('sudo python3 -m spacy download en_core_web_lg'.split())

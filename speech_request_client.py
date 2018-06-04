@@ -1,9 +1,7 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import json
 import requests
 from termcolor import colored
+from definitions import ROOT_DIR
 from speech_control.speech_to_text import SpeechToText
 from speech_control.text_to_speech import TextToSpeech
 # EXCEPTIONS
@@ -14,7 +12,7 @@ from requests.exceptions import ConnectionError
 
 def main():
     try:
-        with open('configs/configuration.json') as json_file:
+        with open(ROOT_DIR + '/configs/configuration.json') as json_file:
             json_data = json.load(json_file)
 
         if json_data['speech_engine'] == "google":

@@ -77,8 +77,6 @@ class SpeechToText:
             else:
                 raise UnknownValueError("'mode' must be 'interactive', 'dictation' or 'conversation'")
 
-        # TODO check language with selected mode , method: check_language_in_mode
-
     def get_mode(self):
         """
         method to get the current mode

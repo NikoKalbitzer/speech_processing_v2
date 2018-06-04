@@ -28,20 +28,21 @@ else:
 
 print("READY for requests")
 
+
 @app.route("/", methods=['POST'])
 def parseREST():
-    #input = request.args.get('input')
-    #userid = request.args.get('userid')
+    # input = request.args.get('input')
+    # userid = request.args.get('userid')
     bytes_obj = request.get_data()
     resp_string = bytes_obj.decode('utf-8')
     print(resp_string)
-    #print("REQUEST from id " + userid + ": " + input)
+    # print("REQUEST from id " + userid + ": " + input)
     userid= 1
     return parse(resp_string, userid)
 
 
 def parse(input, userid):
-    #start with part of speech tagging
+    # start with part of speech tagging
     doc = nlp(input)
 
     response = ""
@@ -155,6 +156,7 @@ def parse(input, userid):
 
     return response
 
+
 def is_negative(token):
     # if there is a negation for play, it is a children of play in the graph
     for child in token.children:
@@ -208,71 +210,80 @@ def play(doc, userid):
         mpm.speak(response)
         mpm.playGernes(arg_genres)
     else:
-        # no gerne song artist found, check for alternate suggestions
-        # TODO: suggest a song / gerne / artist depending
+        # no genre song artist found, check for alternate suggestions
         suggestion = mpm.getRandomGenre()
         states[userid] = ConversationState(ConversationStateEnum.AwaitYesOrNo, "Play " + suggestion + ".")
         response = verbalizer.getAlternatePlaySuggestion(suggestion)
     return response
 
+
 def stop():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.stop()  # TODO: check response
+    mpm.stop()
     return response
+
 
 def pause():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.pause() # TODO: check response
+    mpm.pause()
     return response
+
 
 def resume():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.resume() # TODO: check response
+    mpm.resume()
     return response
+
 
 def playNext():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.playNext() # TODO: check response
+    mpm.playNext()
     return response
+
 
 def playPrevious():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.playPrevious() # TODO: check response
+    mpm.playPrevious()
     return response
 
+
 def playRandom():
-    response = verbalizer.getOkText() # TODO: check response
+    response = verbalizer.getOkText()
     mpm.speak(response)
     mpm.playRandom()
     return verbalizer.getOkText()
 
+
 def clearCurrentPlaylist():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.clearCurrentPlaylist() # TODO: check response
+    mpm.clearCurrentPlaylist()
     return response
+
 
 def updateDatabase():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.updateDatabase() # TODO: check response
+    mpm.updateDatabase()
     return response
+
 
 def repeatSong():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.repeatSong() # TODO: check response
+    mpm.repeatSong()
     return response
+
 
 def repeatPlaylist():
     response = verbalizer.getOkText()
     mpm.speak(response)
-    mpm.repeatPlaylist() # TODO: check response
+    mpm.repeatPlaylist()
     return response
 
 

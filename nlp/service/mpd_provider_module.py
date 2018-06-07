@@ -40,13 +40,29 @@ def playSongOrArtist(arguments):
     for i in arguments:
         i = i.title()
         print(i)
-        song_pos = mpdcontrol.add_artist_to_pl(i)
-        if song_pos is None:
-            song_pos = mpdcontrol.add_title_to_pl(i)
-        if song_pos is not None:
+
+        def play():
             mpdcontrol.play(song_pos)
-            print(mpdcontrol.get_current_song_playlist())
-            sleep(10)
+            print(colored("\nCurrent Playlist: " + str(mpdcontrol.get_current_song_playlist()) + "\n", "yellow"))
+
+        if mpdcontrol.is_artist_in_pl(i):
+            print("Artist already in playlist")
+            song_pos = mpdcontrol.get_desired_songpos(artist=i)
+            play()
+            break
+
+        song_pos = mpdcontrol.add_artist_to_pl(i)
+        print(song_pos)
+        if song_pos is None:
+            if mpdcontrol.is_title_in_pl(i):
+                print("Title already in playlist")
+                song_pos = mpdcontrol.get_desired_songpos(title=i)
+                play()
+                break
+            song_pos = mpdcontrol.add_title_to_pl(i)
+
+        if song_pos is not None:
+            play()
 
 
 def isGerne(gerne):

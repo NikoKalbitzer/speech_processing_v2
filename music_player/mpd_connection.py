@@ -119,7 +119,7 @@ class ControlMPD:
         if isinstance(artist, str):
             resp_artist = self.client.find("Artist", artist)
             if len(resp_artist) == 0:
-                song_pos = self.advanced_search_in_db(artist)
+                song_pos = self.advanced_search_in_db(search_str=artist, search_type="Artist")
                 if song_pos is None:
                     return None
                 else:
@@ -265,6 +265,15 @@ class ControlMPD:
 
         return self.client.playlist()
 
+    def get_playlistinfo(self):
+        """
+
+        :return:
+        """
+        if not self.connected:
+            raise ConnectionError()
+        return self.client.playlistinfo()
+
     def get_player_status(self):
         """
         reports the current status of the player and the volume level
@@ -300,6 +309,25 @@ class ControlMPD:
             return int(max(pos_list)) + 1
         else:
             return 0
+
+    def get_desired_songpos(self, artist=None, title=None):
+        """
+
+        :return:
+        """
+        playlistinfo = self.client.playlistinfo()
+        if artist is not None:
+            for song in playlistinfo:
+                if artist == song['artist']:
+                    return song['pos']
+            else:
+                return None
+        if title is not None:
+            for song in playlistinfo:
+                if title == song['title']:
+                    return song['pos']
+            else:
+                return None
 
     def get_all_artists_in_db(self):
         """
@@ -388,6 +416,32 @@ class ControlMPD:
                     return True
                 else:
                     return False
+
+    def is_artist_in_pl(self, artist):
+        """
+
+        :return:
+        """
+        playlistinfo = self.get_playlistinfo()
+        for song in playlistinfo:
+            if artist == song['artist']:
+                return True
+        else:
+            return False
+
+    def is_title_in_pl(self, title):
+        """
+
+        :param title:
+        :return:
+        """
+        playlistinfo = self.get_playlistinfo()
+        for song in playlistinfo:
+            if title == song['title']:
+                return True
+        else:
+            return False
+
 
 # CURRENT PLAYLIST
 
@@ -538,7 +592,8 @@ if __name__ == "__main__":
 
     mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
-    print(mpdclient.get_all_genres_in_db())
-    print(mpdclient.is_genre_in_db('rhy/ambient/electronic/jaz'))
     print(mpdclient.get_current_song_playlist())
-
+    #print(mpdclient.get_player_status())
+    #print(mpdclient.is_title_in_pl("Jane Became Insane"))
+    #mpdclient.get_desired_songpos()
+    mpdclient.stop()

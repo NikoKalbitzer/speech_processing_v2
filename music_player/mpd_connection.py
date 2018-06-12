@@ -118,6 +118,7 @@ class ControlMPD:
         """
         if isinstance(artist, str):
             resp_artist = self.client.find("Artist", artist)
+            # print("resp_artist: " + str(resp_artist))
             if len(resp_artist) == 0:
                 song_pos = self.advanced_search_in_db(search_str=artist, search_type="Artist")
                 if song_pos is None:
@@ -151,7 +152,7 @@ class ControlMPD:
         if isinstance(title, str):
             resp_title = self.client.find("Title", title)
             if len(resp_title) == 0:
-                song_pos = self.advanced_search_in_db(title)
+                song_pos = self.advanced_search_in_db(search_str=title, search_type="Title")
                 if song_pos is None:
                     return None
                 else:
@@ -176,7 +177,7 @@ class ControlMPD:
         if isinstance(genre, str):
             resp_genre = self.client.find("Genre", genre)
             if len(resp_genre) == 0:
-                song_pos = self.advanced_search_in_db(genre)
+                song_pos = self.advanced_search_in_db(search_str=genre, search_type="Genre")
                 if song_pos is None:
                     return None
                 else:
@@ -211,7 +212,6 @@ class ControlMPD:
         if isinstance(search_str, str):
             if search_type is None:
                 db_response = self.client.search("Any", search_str)
-                print(db_response)
             else:
                 if isinstance(search_type, str):
                     db_response = self.client.search(search_type, search_str)
@@ -235,17 +235,6 @@ class ControlMPD:
             raise TypeError("'search_str' must be Type of String")
 
 # QUERYING USEFUL INFORMATION
-    def is_playing(self):
-        """
-        displays the song info of the current song
-        """
-        if not self.connected:
-            raise ConnectionError("mpd client lost the connection")
-
-        states = self.get_player_status()
-        player_state = states.get('state')
-
-        return player_state == 'play'
 
     def get_current_song(self):
         """
@@ -273,6 +262,39 @@ class ControlMPD:
         if not self.connected:
             raise ConnectionError()
         return self.client.playlistinfo()
+
+    def get_number_artist_in_pl(self, artist):
+        """
+
+        :return:
+        """
+        all_artist = [file['artist'] for file in self.get_playlistinfo()]
+        counter = 0
+        artist = str(artist)
+        for file in all_artist:
+            file = str(file)
+            if artist.lower() in file.lower():
+                counter += 1
+        return counter
+
+    def get_number_artist_in_db(self, artist):
+        """
+
+        :return:
+        """
+        resp_artist = self.client.find("Artist", artist)
+        if len(resp_artist) > 0:
+            return len(resp_artist)
+        else:
+            db_response = self.advanced_search_in_db(search_str=artist, search_type="Artist", s_pos=False)
+            print(db_response)
+            if db_response is None:
+                return 0
+            else:
+                if len(db_response) > 0:
+                    return len(db_response)
+                else:
+                    return 0
 
     def get_player_status(self):
         """
@@ -442,6 +464,17 @@ class ControlMPD:
         else:
             return False
 
+    def is_playing(self):
+        """
+        displays the song info of the current song
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
+        states = self.get_player_status()
+        player_state = states.get('state')
+
+        return player_state == 'play'
 
 # CURRENT PLAYLIST
 
@@ -593,7 +626,11 @@ if __name__ == "__main__":
     mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
     print(mpdclient.get_current_song_playlist())
+    #print([print(file['artist']) for file in mpdclient.get_playlistinfo()])
+    print(mpdclient.get_number_artist_in_pl(artist='Volbeat'))
+    print(mpdclient.get_number_artist_in_db(artist='Volbeat'))
     #print(mpdclient.get_player_status())
     #print(mpdclient.is_title_in_pl("Jane Became Insane"))
     #mpdclient.get_desired_songpos()
-    mpdclient.stop()
+    #print(mpdclient.advanced_search_in_db(search_str="Beatsteaks", search_type="Artist"))
+

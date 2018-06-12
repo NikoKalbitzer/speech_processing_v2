@@ -45,8 +45,15 @@ def playSongOrArtist(arguments):
             mpdcontrol.play(song_pos)
             print(colored("\nCurrent Playlist: " + str(mpdcontrol.get_current_song_playlist()) + "\n", "yellow"))
 
+        def check_numbers(artist):
+            if mpdcontrol.get_number_artist_in_pl(artist=artist) < mpdcontrol.get_number_artist_in_db(artist=artist):
+                mpdcontrol.add_artist_to_pl(artist=artist)
+            else:
+                return
+
         if mpdcontrol.is_artist_in_pl(i):
             print("Artist already in playlist")
+            check_numbers(i)
             song_pos = mpdcontrol.get_desired_songpos(artist=i)
             play()
             break

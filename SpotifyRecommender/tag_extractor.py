@@ -61,7 +61,6 @@ class TagExtractor:
                 print("waiting 1s, unexpected api exception")
                 error_list.append(single_track_info)
         print(colored("Found on Spotify:", "green"), len(spotify_id_list), "/", len(songnames_dict))
-        #print("Songs not found:", *error_list)
         return spotify_id_list
 
     def _remove_brackets(self, dict_list):

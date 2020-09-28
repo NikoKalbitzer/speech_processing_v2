@@ -37,7 +37,8 @@ setup(
     packages=["audio", "configs", "music_player", "nlp", "nlp.locust", "nlp.service", "resources", "speech_control", "SpotifyRecommender"],
     package_data={'audio': ['flac-linux-x86', 'flac-linux-x86_64', 'flac-mac', 'flac-win32.exe'],
                   'configs': ['*.json'], '': ['requirements.txt'], 'music_player': ['mpd.exe', 'radio_playlists/*.m3u']},
-    install_requires=["monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil", "tekore", "termcolor", "scipy", "numpy"],
+    setup_requires=['numpy'],
+    install_requires=["monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil", "tekore", "termcolor", "numpy", "scipy"],
     cmdclass={
         'install': PostInstallCommand
     },

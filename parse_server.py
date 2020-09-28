@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 nlp = spacy.load("en_core_web_lg")
 # nlp = spacy.load("en")
-recommender_inst = recommender.Recommender()
+recommender_inst = None
 
 # conversation state is stored in a expiringdict
 # note that there an additional state which is also the initial state which is considered if no state is stored
@@ -146,6 +146,8 @@ def parse(input, userid):
                         if len(doc) == 2 and token.nbor().lemma_ == "recommend":
                             response = "Initializing the recommender. This may take a while."
                             tag_extractor.TagExtractor()
+                            global recommender_inst
+                            recommender_inst = recommender.Recommender()
         elif states.get(userid).state == ConversationStateEnum.AwaitYesOrNo:
             log.info("Yes or no")
             state = states.pop(userid)  # remove state

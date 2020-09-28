@@ -30,14 +30,14 @@ setup(
     name="speech_processing",
     description="A repository to control the mpd with speech",
     version="1.0",
-    author="Bierschneider Christian, Martin Surner",
-    author_email="christian1.bierschneider@st.oth-regensburg.de, martin.surner@st.oth-regensburg.de",
+    author="Bierschneider Christian, Martin Surner, Niko Kalbitzer",
+    author_email="christian1.bierschneider@st.oth-regensburg.de, martin.surner@st.oth-regensburg.de, niko.kalbitzer@st.oth-regensbutg.de",
     py_modules=["speech_request_client", "definitions", "parse_server"],
     scripts=['requirements.txt'],
-    packages=["audio", "configs", "music_player", "nlp", "nlp.locust", "nlp.service", "resources", "speech_control"],
+    packages=["audio", "configs", "music_player", "nlp", "nlp.locust", "nlp.service", "resources", "speech_control", "SpotifyRecommender"],
     package_data={'audio': ['flac-linux-x86', 'flac-linux-x86_64', 'flac-mac', 'flac-win32.exe'],
                   'configs': ['*.json'], '': ['requirements.txt'], 'music_player': ['mpd.exe', 'radio_playlists/*.m3u']},
-    install_requires=["monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil"],
+    install_requires=["monotonic", "python-mpd2", "spacy", "expiringdict", "Flask", "psutil", "tekore", "termcolor", "scipy", "numpy"],
     cmdclass={
         'install': PostInstallCommand
     },

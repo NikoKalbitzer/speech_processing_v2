@@ -1,3 +1,17 @@
+# Speech processing v2
+This Repository is an extension of [speech_processing](https://github.com/bierschi/speech_processing) and was created as part of a bachelor thesis at the [Ostbayerische Technische Hochschule Regensburg](https://www.oth-regensburg.de/). 
+
+A music recommender system has been added to this MPD-Client. 
+Following commands are now possible:
+- recommend initialize: This has to be called after installing this client to generate the required files for the recommender system. This requires an active internet connection. When updating the MPD-Database, this command has to be called again
+- Recommend a song : Recommends a single song based on your preferences
+- Recommend a [genre] song: Recommends a single song of the specified genre based on your preferences
+- Recommend a [postive/negative] song: Recommends a postive or negative song. Positive songs sound happy and upbeat, negative song sad and depressed
+- Recommend a playlist: Recommends a playlist based on your preferences
+
+For information on how to install, please refer to the original readme below.
+
+
 # Speech processing
 
 This Repository was created for a project @ [Ostbayerische Technische Hochschule Regensburg](https://www.oth-regensburg.de/) in WS 17/18

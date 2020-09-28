@@ -19,13 +19,17 @@ WEIGHT_RELATED_ARTISTS = 1
 
 class Recommender:
     def __init__(self):
-        self.json_data = self.read_tags_from_json(config_project.PATH_SONG_DATA)
-        self.song_vectors = self.create_song_feature_vectors()  # [(Valence, danceability, energy), title, interpreter]
-        self.played_songs_session = []
-        self.user_controller = UserDataController(config_project.PATH_USER_DATA, self.song_vectors)
-        self.mpd = mpd_connector.MpdConnector(config_project.MPD_IP, config_project.MPD_PORT)
-        t = threading.Thread(target=self._update_played_songs, daemon=True)
-        t.start()
+        if not os.path.exists(config_project.PATH_SONG_DATA):
+            logging.warning(
+                "You need to extract song tags before initializing the recommender! Please say \"initialize recommend\".")
+        else:
+            self.json_data = self.read_tags_from_json(config_project.PATH_SONG_DATA)
+            self.song_vectors = self.create_song_feature_vectors()  # [(Valence, danceability, energy), title, interpreter]
+            self.played_songs_session = []
+            self.user_controller = UserDataController(config_project.PATH_USER_DATA, self.song_vectors)
+            self.mpd = mpd_connector.MpdConnector(config_project.MPD_IP, config_project.MPD_PORT)
+            t = threading.Thread(target=self._update_played_songs, daemon=True)
+            t.start()
 
     @staticmethod
     def read_tags_from_json(path):
@@ -267,6 +271,7 @@ class UserDataController:
                 self.related_artists = json.load(json_file)
         else:
             logging.error("Related artists file not found")
+            f = open(self.path_serialization, "w")
 
     def serialize_stats_all_time(self):
         stats_as_dict = {"total_songs_played": self.stats_all_time.song_count,

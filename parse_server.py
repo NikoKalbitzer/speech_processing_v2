@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 nlp = spacy.load("en_core_web_lg")
 # nlp = spacy.load("en")
-recommender_inst = None
+recommender_inst = recommender.Recommender()
 
 # conversation state is stored in a expiringdict
 # note that there an additional state which is also the initial state which is considered if no state is stored
@@ -45,7 +45,7 @@ def parseREST():
 def parse(input, userid):
     # start with part of speech tagging
     doc = nlp(input)
-
+    global recommender_inst
     response = ""
 
     try:
@@ -138,7 +138,7 @@ def parse(input, userid):
                                 doc) > 3 and token.nbor().lemma_ == "a" and token.nbor().nbor().nbor().lemma_ == "song":
                             recommender_inst.recommend_genre_or_mood(token.nbor().nbor().lemma_)
                             response = "recommend a song with parameter:" + token.nbor().nbor().lemma_
-                        elif len(doc) == 2 and token.nbor().lemma_ == "playlist":
+                        elif len(doc) ==3 and token.nbor().lemma_ == "a" and token.nbor().nbor().lemma_ == "playlist":
                             recommender_inst.recommend_list_of_songs()
                             response = "Playing list of your most recommended songs!"
                 elif token.lemma_ == "initialize":
@@ -146,7 +146,6 @@ def parse(input, userid):
                         if len(doc) == 2 and token.nbor().lemma_ == "recommend":
                             response = "Initializing the recommender. This may take a while."
                             tag_extractor.TagExtractor()
-                            global recommender_inst
                             recommender_inst = recommender.Recommender()
         elif states.get(userid).state == ConversationStateEnum.AwaitYesOrNo:
             log.info("Yes or no")

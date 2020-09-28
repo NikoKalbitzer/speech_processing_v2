@@ -6,12 +6,13 @@ from nlp.service import verbalizer
 from expiringdict import ExpiringDict
 from nlp.service.conversationState import ConversationStateEnum, ConversationState
 from flask import Flask, request
-#from nlp.service.response import Response, ErrorCodeEnum
+from SpotifyRecommender import recommender, tag_extractor
 
 app = Flask(__name__)
 
 nlp = spacy.load("en_core_web_lg")
-#nlp = spacy.load("en")
+# nlp = spacy.load("en")
+recommender_inst = recommender.Recommender()
 
 # conversation state is stored in a expiringdict
 # note that there an additional state which is also the initial state which is considered if no state is stored
@@ -37,7 +38,7 @@ def parseREST():
     resp_string = bytes_obj.decode('utf-8')
     print(resp_string)
     # print("REQUEST from id " + userid + ": " + input)
-    userid= 1
+    userid = 1
     return parse(resp_string, userid)
 
 
@@ -128,21 +129,37 @@ def parse(input, userid):
                         elif 'song' in (str(word).lower() for word in doc):
                             response = repeatSong()
                     break
-
+                elif token.lemma_ == "recommend":
+                    if not is_negative(token):
+                        if len(doc) == 3 and token.nbor().lemma_ == "a" and token.nbor().nbor().lemma_ == "song":
+                            recommender_inst.recommend_song()
+                            response = "recommending song"
+                        elif len(
+                                doc) > 3 and token.nbor().lemma_ == "a" and token.nbor().nbor().nbor().lemma_ == "song":
+                            recommender_inst.recommend_genre_or_mood(token.nbor().nbor().lemma_)
+                            response = "recommend a song with parameter:" + token.nbor().nbor().lemma_
+                        elif len(doc) == 2 and token.nbor().lemma_ == "playlist":
+                            recommender_inst.recommend_list_of_songs()
+                            response = "Playing list of your most recommended songs!"
+                elif token.lemma_ == "initialize":
+                    if not is_negative(token):
+                        if len(doc) == 2 and token.nbor().lemma_ == "recommend":
+                            response = "Initializing the recommender. This may take a while."
+                            tag_extractor.TagExtractor()
         elif states.get(userid).state == ConversationStateEnum.AwaitYesOrNo:
             log.info("Yes or no")
-            state = states.pop(userid) # remove state
+            state = states.pop(userid)  # remove state
             if doc[0].lemma_ == "yes":
-                response = parse(state.suggestion, userid) # simply call with a suggestion like 'Play rock.'
+                response = parse(state.suggestion, userid)  # simply call with a suggestion like 'Play rock.'
             else:
                 response = "Oh, ok."
 
             mpm.speak(response)
         elif states.get(userid).state == ConversationStateEnum.AwaitSongArtistOrGerne:
             log.info("Song, Genre or Artist")
-            states.pop(userid) # remove state
+            states.pop(userid)  # remove state
             return parse("Play " + str(doc), userid)
-    except Exception as e: # specify Exception
+    except Exception as e:  # specify Exception
         response = verbalizer.getConnectionError()
         mpm.speak(response)
         raise e
@@ -160,7 +177,7 @@ def parse(input, userid):
 def is_negative(token):
     # if there is a negation for play, it is a children of play in the graph
     for child in token.children:
-        #print(child.text + " " + child.dep_)
+        # print(child.text + " " + child.dep_)
         if child.dep_ == "neg":
             log.info("NEG found")
             return True
@@ -179,7 +196,8 @@ def play(doc, userid):
         arguments.append(str(chunk))
 
     # in some cases chunk analysis takes play within the chunk
-    if len(arguments) > 0 and arguments[0].lower().startswith("play") and doc.text.lower().count("play") == arguments[0].lower().count("play"):
+    if len(arguments) > 0 and arguments[0].lower().startswith("play") and doc.text.lower().count("play") == arguments[
+        0].lower().count("play"):
         arguments[0] = arguments[0][5:]
         if "" in arguments:
             arguments.remove("")
@@ -289,4 +307,3 @@ def repeatPlaylist():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
